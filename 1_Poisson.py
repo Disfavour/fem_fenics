@@ -1,10 +1,16 @@
 from fenics import *
 import numpy as np
 import matplotlib.pyplot as plt
+#from dolfin import RectangleMesh
 
 
 # Создание сетки и функционального пространства
-mesh = UnitSquareMesh(8, 8)
+#mesh = UnitSquareMesh(8, 8, "right/left")
+mesh = RectangleMesh(Point(0, 0), Point(3, 2), 6, 10, "left")
+# plot()
+# plt.show()
+# plt.clf()
+
 V = FunctionSpace(mesh, "P", 1)
 
 # Граничные условия
@@ -27,12 +33,13 @@ u = Function(V)
 solve(a == L, u, bc)
 
 # Визуализация сетки и решения
-plot(mesh)
+
 plt.colorbar(plot(u))
+plot(mesh)
 
 # Сохранение решения в VTK формате
-vtkfile = File("poisson/solution.pvd")
-vtkfile << u
+# vtkfile = File("poisson/solution.pvd")
+# vtkfile << u
 
 # Вычисление ошибки в L2 норме
 error_L2 = errornorm(u_D, u, "L2")
