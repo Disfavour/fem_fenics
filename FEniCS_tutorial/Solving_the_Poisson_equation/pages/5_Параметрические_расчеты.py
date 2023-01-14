@@ -14,7 +14,7 @@ with col2:
     mesh_size_x_1 = st.slider("Количество ячеек сетки по x2", 1, 100, 8, key=2)
 
 with col3:
-    degree = st.slider("Степень конечного элемента", 1, 10, 1)
+    degree = st.slider("Степень конечных элементов", 1, 10, 1)
 
 mesh_vis = st.checkbox("Визуализация сетки")
 
@@ -48,16 +48,10 @@ solve(a == l, u, bc)
 
 error_L2 = errornorm(g, u, "L2")
 
-
 vertex_values_u_D = g.compute_vertex_values(mesh)
 vertex_values_u = u.compute_vertex_values(mesh)
 import numpy as np
 error_max = np.max(np.abs(vertex_values_u_D - vertex_values_u))
-
-
-with st.expander("Ошибки вычисления"):
-    f"$L^2$ норма $={error_L2}$"
-    f"Максимальная ошибка $={error_max}$"
 
 col1, col2 = st.columns(2)
 
@@ -75,3 +69,10 @@ with col2:
         plot(mesh)
     st.pyplot(plt.gcf())
     plt.clf()
+
+with st.expander("Ошибки вычисления"):
+    f"$L^2 = {error_L2}$"
+    f"$L^\infty = {error_max}$"
+    #f"$L^\infty = {errornorm(g, u, 'Linf')}$"
+    # f"$L^1 = {errornorm(g, u, 'l1')}$"
+

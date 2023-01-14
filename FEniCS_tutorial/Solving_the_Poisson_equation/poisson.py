@@ -2,14 +2,17 @@ from fenics import *
 import numpy as np
 import matplotlib.pyplot as plt
 #from dolfin import RectangleMesh
+import gmsh
+
 
 
 # Создание сетки и функционального пространства
 #mesh = UnitSquareMesh(8, 8, "right/left")
-mesh = RectangleMesh(Point(0, 0), Point(3, 2), 6, 10, "left")
-# plot()
-# plt.show()
-# plt.clf()
+mesh = RectangleMesh(Point(0, 0), Point(1, 1), 1, 1, "left")
+
+#plot(Mesh().coordinates() = np.array([[0], [1]]))
+#plt.show()
+#plt.clf()
 
 V = FunctionSpace(mesh, "P", 1)
 
