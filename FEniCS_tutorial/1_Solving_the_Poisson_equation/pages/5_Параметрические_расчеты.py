@@ -72,7 +72,4 @@ with col2:
 
 with st.expander("Ошибки вычисления"):
     f"$L^2 = {error_L2}$"
-    f"$L^\infty = {error_max}$"
-    #f"$L^\infty = {errornorm(g, u, 'Linf')}$"
-    # f"$L^1 = {errornorm(g, u, 'l1')}$"
-
+    "$L^{max} = " + f"{error_max}$"

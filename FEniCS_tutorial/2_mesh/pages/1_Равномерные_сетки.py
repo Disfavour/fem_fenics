@@ -4,27 +4,21 @@ import matplotlib.pyplot as plt
 
 
 r"""
-### 2. Создание сетки
+# Равномерные сетки
 
-Структурированные сетки
-равномерные
+Для создания некоторых сеток используется объект представляющий точку - Point.
 
-1 2 3 мерные
-
-неравномерные
-
-
-#### Point(x1=0.0, x2=0.0, x3=0.0)
+### Point(x1=0.0, x2=0.0, x3=0.0)
 
 Создание точки $(x_1, x_2, x_3)$.
 """
 
 r"""
-#### IntervalMesh(n, a, b)
+### IntervalMesh(n, a, b)
 
 Создание равномерной сетки на отрезке $[a, b]$.
 
-##### Параметры
+#### Параметры
 
 - n (int) - количество ячеек.
 
@@ -38,16 +32,15 @@ with st.expander("Визуализация"):
 
     with col1:
         n = st.slider("n", 1, 100, 10)
+        a, b = st.slider("a, b", -2.0, 2.0, (0.0, 1.0))
 
     with col2:
-        a, b = st.slider("a, b", -10.0, 10.0, (0.0, 1.0))
-
-    plot(IntervalMesh(n, a, b))
-    st.pyplot(plt.gcf())
-    plt.clf()
+        plot(IntervalMesh(n, a, b))
+        st.pyplot(plt.gcf())
+        plt.clf()
 
 r"""
-#### UnitIntervalMesh(n)
+### UnitIntervalMesh(n)
 
 Аналог IntervalMesh, но только для отрезка $[0, 1]$.
 
@@ -63,11 +56,11 @@ IntervalMesh(n, 0, 1)
 """
 
 r"""
-#### RectangleMesh(p1, p2, nx1, nx2, diagonal="right")
+### RectangleMesh(p1, p2, nx1, nx2, diagonal="right")
 
 Создание треугольной равномерной сетки на прямоугольнике.
 
-##### Параметры
+#### Параметры
 
 - p1 (Point) - точка с минимальными значениями $x_1, x_2$ прямоугольника.
 
@@ -99,23 +92,20 @@ with st.expander("Визуализация"):
         "##### p2"
         p2 = Point(st.slider("x1", -10.0, 10.0, 1.0, key=13), st.slider("x2", -10.0, 10.0, 1.0, key=14))
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
 
     with col1:
         nx1 = st.slider("nx1", 1, 100, 10, key=15)
-
-    with col2:
         nx2 = st.slider("nx2", 1, 100, 10, key=16)
-
-    with col3:
         diagonal = st.selectbox("diagonal", ("left", "right", "right/left", "left/right", "crossed"))
 
-    plot(RectangleMesh(p1, p2, nx1, nx2, diagonal))
-    st.pyplot(plt.gcf())
-    plt.clf()
+    with col2:
+        plot(RectangleMesh(p1, p2, nx1, nx2, diagonal))
+        st.pyplot(plt.gcf())
+        plt.clf()
 
 r"""
-#### UnitSquareMesh(x1n, x2n, diagonal="right")
+### UnitSquareMesh(x1n, x2n, diagonal="right")
 
 Аналог RectangleMesh, но только для квадрата $[0, 1] \times [0, 1]$.
 
@@ -131,11 +121,11 @@ RectangleMesh(Point(0, 0), Point(1, 1), x1n, x2n, diagonal)
 """
 
 r"""
-#### BoxMesh(p1, p2, nx1, nx2, nx3)
+### BoxMesh(p1, p2, nx1, nx2, nx3)
 
 Создание равномерной сетки из тетраэдров на прямоугольном параллелепипеде.
 
-##### Параметры
+#### Параметры
 
 - p1 (Point) - точка с минимальными значениями $x_1, x_2, x_3$ прямоугольного параллелепипеда.
 
@@ -167,23 +157,20 @@ with st.expander("Визуализация"):
             st.slider("x3", -10.0, 10.0, 1.0, key=26),
         )
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
 
     with col1:
         nx1 = st.slider("nx1", 1, 100, 10, key=27)
-
-    with col2:
         nx2 = st.slider("nx2", 1, 100, 10, key=28)
-
-    with col3:
         nx3 = st.slider("nx3", 1, 100, 10, key=29)
 
-    plot(BoxMesh(p1, p2, nx1, nx2, nx3))
-    st.pyplot(plt.gcf())
-    plt.clf()
+    with col2:
+        plot(BoxMesh(p1, p2, nx1, nx2, nx3))
+        st.pyplot(plt.gcf())
+        plt.clf()
 
 r"""
-#### UnitCubeMesh(nx1, nx2, nx3)
+### UnitCubeMesh(nx1, nx2, nx3)
 
 Аналог BoxMesh, но только для куба $[0, 1] \times [0, 1] \times [0, 1]$.
 
@@ -195,15 +182,5 @@ UnitCubeMesh(nx1, nx2, nx3)
 
 ```python
 BoxMesh(Point(0, 0, 0), Point(1, 1, 1), nx1, nx2, nx3)
-```
-"""
-
-r"""
-#### Сетка из файла
-
-Создание сетки из файла в формате DOLPHIN XML:
-
-```python
-Mesh("file.xml")
 ```
 """

@@ -28,13 +28,12 @@ with st.expander("Визуализация"):
 
     with col1:
         n = st.slider("n", 1, 100, 10)
-
-    with col2:
         m = st.slider("m", 1, 100, 10)
 
-    plot(UnitSquareMesh(n, m))
-    st.pyplot(plt.gcf())
-    plt.clf()
+    with col2:
+        plot(UnitSquareMesh(n, m))
+        st.pyplot(plt.gcf())
+        plt.clf()
 
 r"""
 ### Задание функционального пространства
