@@ -1,11 +1,12 @@
 import streamlit as st
 
+
 r"""
 # Импорт сеток
 
-Создание сетки из файла в формате DOLPHIN XML:
+Импортировать сетку можно из файла в формате DOLPHIN XML.
 
 ```python
-Mesh("file.xml")
+mesh = Mesh("file.xml")
 ```
 """

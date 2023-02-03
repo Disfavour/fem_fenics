@@ -117,6 +117,8 @@ with st.expander("Реализация и визуализация"):
 
         plot(mesh)
 
-    st.pyplot(plt.gcf())
-    plt.clf()
+    col = st.columns(2)
 
+    with col[0]:
+        st.pyplot(plt.gcf())
+        plt.clf()

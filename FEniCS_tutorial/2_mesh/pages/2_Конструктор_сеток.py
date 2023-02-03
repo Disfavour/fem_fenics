@@ -88,10 +88,12 @@ with st.expander("Пример использования MeshEditor"):
         editor.close()
 
         plot(mesh)
-        plt.show()
 
-    st.pyplot(plt.gcf())
-    plt.clf()
+    col = st.columns(2)
+
+    with col[0]:
+        st.pyplot(plt.gcf())
+        plt.clf()
 
 with st.expander("Удаление ячейки с помощью MeshEditor"):
     with st.echo():
@@ -127,7 +129,6 @@ with st.expander("Удаление ячейки с помощью MeshEditor"):
         editor.close()
 
         plot(new_mesh)
-        plt.show()
 
     st.pyplot(plt.gcf())
     plt.clf()
