@@ -1,8 +1,15 @@
 import streamlit as st
+from os.path import abspath, join, dirname
+import imageio
 
+
+img_dir = join(dirname(dirname(abspath(__file__))), "images")
+
+lagrange_interval = imageio.imread_v2(join(img_dir, "d1m.png"))
+lagrange_triangle = imageio.imread_v2(join(img_dir, "d2m.png"))
 
 r"""
-# Задание функционального пространства
+# Функциональные пространства в FEniCS
 
 ## FunctionSpace(mesh, family, degree, form_degree=None, constrained_domain=None, restriction=None)
 
@@ -42,3 +49,18 @@ with st.expander("Пример использования"):
     V = FunctionSpace(mesh, "CG", 1)
     ```
     """
+
+r"""
+## Одномерные лагранжевы элементы
+
+Для более высокой степени элемента задействуются точки внутри отрезка.
+"""
+
+st.image(lagrange_interval)
+
+r"""
+## Двумерные лагранжевы элементы
+
+Для более высокой степени элемента задействуются точки на ребрах и внутри треугольника.
+"""
+st.image(lagrange_triangle)

@@ -1,78 +1,80 @@
 import streamlit as st
 import imageio
+from os.path import abspath, join, dirname
+from fenics import *
+import matplotlib.pyplot as plt
+import numpy as np
 
+
+img_dir = join(dirname(dirname(abspath(__file__))), "images")
+
+numerated_interval = imageio.imread_v2(join(img_dir, "numerated_interval.png"))
+numerated_interval_3p = imageio.imread_v2(join(img_dir, "numerated_interval_3p.png"))
 
 r"""
 # Одномерный случай
-"""
 
-im = imageio.imread_v2("FEniCS_tutorial/4_function_space/d1.png")
-st.image(im)
-
-r"""
 Область:
 
 $$
-\Omega = \{x \ | \ 0 \le x \le l\}
+\Omega = \{x \ | \ l_0 \le x \le l_1\}.
 $$
 
-Сетка:
+Узлы сетки:
 
 $$
-x_j = \alpha h
-\\[0.3 cm]
-j = 0, 1, \dots, n
-\\[0.3 cm]
-\alpha = 0, 1, \dots, n
-\\[0.3 cm]
-h = \frac {l} {n}
+x_i = \frac {l_1 - l_0} {n} i, \quad i = 0, 1, \dots, n.
 $$
 
-Конечные элементы:
+Ячейки сетки:
 
 $$
-\Omega_i = \{ x \  | \  x_{j-1} \le x \le x_j  \}
-\\[0.3 cm]
-i = 1, \dots, n
+\Omega_i = \{ x \  | \  x_{i-1} \le x \le x_i  \}, \quad i = 1, 2, \dots, n.
 $$
 
-Аппроксимация полиномом по 2-м узлам:
+Сетка при $l_0 = 0, \ l_1 = 1$ и $n = 5$:
+"""
+
+plot(UnitIntervalMesh(5))
+st.pyplot(plt.gcf())
+plt.clf()
+
+r"""
+Конечный элемент представляет собой ячейку вместе с аппроксимацией на ней.
+
+## Кусочно-линейная аппроксимация
+
+Рассмотрим ячейку $[x_0, x_1]$.
+"""
+
+st.image(numerated_interval)
+
+r"""
+Аппроксимация по 2-м узлам полиномом 1-й степени
 
 $$
-\varphi = \alpha_1 + \alpha_2 x
+f(x) = ax + b
 $$
 
-Коэффициенты $\alpha_1$ и $\alpha_2$ могут быть определены с помощью условий в узловых точках:
-
-- $\varphi = \varPhi_k$ при $x = x_k$;
-- $\varphi = \varPhi_{k+1}$ при $x = x_{k+1}$.
-
-Эти условия приводят к системе двух уравнений:
+получается из системы:
 
 $$
 \begin{cases}
-\varPhi_k = \alpha_1 + \alpha_2 x_k
+f_0 = a x_0 + b
 \\
-\varPhi_{k+1} = \alpha_1 + \alpha_2 x_{k+1}
-\end{cases}
+f_1 = a x_1 + b
+\end{cases}.
 $$
 
-Полиномиальная функция:
+Искомый полином:
 
 $$
-\varphi = \left( \frac {x_{k+1} - x} {x_{k+1} - x_k} \right) \varPhi_k + \left( \frac {x - x_k} {x_{k+1} - x_k} \right)
-\varPhi_{k+1}
+\frac {f_0 - f_1} {x_0 - x_1} x + \frac {f_1 x_0 - f_0 x_1} {x_0 - x_1}.
 $$
 
-Значения функции равны единице в одном определённом узле и обращаются в ноль во всех других узлах.
+### Конечно-элементный базис
 
-$$
-u(x) = \sum \limits_{i=1}^n c_i \varphi_i(x)
-\\[0.3 cm]
-x \in \Omega = \bigcup \limits_{i=1}^m \Omega_i
-$$
-
-Конечно-элементный базис - функции $\varphi_i(x), \  i = 1, 2, \dots, n$, которые в узлах:
+Линейно независимые (пробные) функции
 
 $$
 \varphi_i(x_j) = 
@@ -83,11 +85,179 @@ $$
 \end{cases}
 $$
 
+равны единице в одном определённом узле и обращаются в ноль во всех других узлах.
 
-## Лагранжевы элементы более высокой степени
+Базисные функции непрерывны на ячейке.
 
-Для элементов более высокой степени задействуются точки внутри отрезка:
+Условия для базисных функций:
+
+$$
+\begin{cases}
+\varphi_0(x_0) = 1
+\\
+\varphi_0(x_1) = 0
+\end{cases},
+
+\quad \quad
+
+\begin{cases}
+\varphi_1(x_0) = 0
+\\
+\varphi_1(x_1) = 1
+\end{cases}.
+$$
+
+Базисные функции могут быть найдены из систем:
+
+$$
+\begin{cases}
+a_0 x_0 + b_0 = 1
+\\
+a_0 x_1 + b_0 = 0
+\end{cases},
+
+\quad \quad
+
+\begin{cases}
+a_1 x_0 + b_1 = 0
+\\
+a_1 x_1 + b_1 = 1
+\end{cases}.
+$$
+
+Базисные функции:
+
+$$
+\varphi_0(x) = \frac {1} {x_0 - x_1} x + \frac {x_1} {x_1 - x_0},
+\\[0.3 cm]
+\varphi_1(x) = \frac {1} {x_1 - x_0} x + \frac {x_0} {x_0 - x_1}.
+$$
+
+При $x_0 = 0$ и $x_1 = 1$ базисные функции принимают вид:
 """
 
-im = imageio.imread_v2("FEniCS_tutorial/4_function_space/d1m.png")
-st.image(im)
+col = st.columns(2)
+
+with col[0]:
+    r"""
+    $$
+    \varphi_0(x) = -x + 1,
+    \\[0.3 cm]
+    \varphi_1(x) = x.
+    $$
+    """
+with col[1]:
+    x = np.linspace(0, 1, 100)
+    y_0 = -x + 1
+    y_1 = x
+
+    plt.plot(x, y_0)
+    plt.plot(x, y_1)
+    plt.grid()
+    plt.legend([r"$\varphi_0$", r"$\varphi_1$"])
+    st.pyplot(plt.gcf())
+    plt.clf()
+
+r"""
+## Кусочно-квадратичная аппроксимация
+
+Рассмотрим ячейку $[x_0, x_2], \  x_0 < x_1 < x_2$.
+"""
+
+st.image(numerated_interval_3p)
+
+r"""
+Аппроксимация по 3-м узлам полиномом 2-й степени
+
+$$
+f(x) = a x^2 + b x + c.
+$$
+
+Применяем интерполяционный многочлен Лагранжа:
+
+$$
+L(x) = \sum \limits_{i=0}^n y_i l_i(x),
+\\[0.3 cm]
+l_i(x) = \prod \limits_{j=0, \ j \ne i}^n \frac {x - x_j} {x_i - x_j}.
+$$
+
+Искомый полином:
+
+$$
+f_0 \frac {(x - x_1)(x - x_2)} {(x_0 - x_1)(x_0 - x_2)}
++ f_1 \frac {(x - x_0)(x - x_2)} {(x_1 - x_0)(x_1 - x_2)}
++ f_2 \frac {(x - x_0)(x - x_1)} {(x_2 - x_0)(x_2 - x_1)}.
+$$
+
+### Конечно-элементный базис
+
+Условия для базисных функций:
+
+$$
+\begin{cases}
+\varphi_0(x_0) = 1
+\\
+\varphi_0(x_1) = 0
+\\
+\varphi_0(x_2) = 0
+\end{cases},
+
+\quad \quad
+
+\begin{cases}
+\varphi_1(x_0) = 0
+\\
+\varphi_1(x_1) = 1
+\\
+\varphi_1(x_2) = 0
+\end{cases},
+
+\quad \quad
+
+\begin{cases}
+\varphi_2(x_0) = 0
+\\
+\varphi_2(x_1) = 0
+\\
+\varphi_2(x_2) = 1
+\end{cases}.
+$$
+
+С помощью интерполяционного многочлена Лагранжа получаем базисные функции:
+
+$$
+\varphi_0 = \frac {(x - x_1)(x - x_2)} {(x_0 - x_1)(x_0 - x_2)},
+\\[0.3 cm]
+\varphi_1 = \frac {(x - x_0)(x - x_2)} {(x_1 - x_0)(x_1 - x_2)},
+\\[0.3 cm]
+\varphi_2 = \frac {(x - x_0)(x - x_1)} {(x_2 - x_0)(x_2 - x_1)}.
+$$
+
+При $x_0 = 0, \ x_1 = 1, \ x_2 = 2$ базисные функции принимают вид:
+"""
+
+col = st.columns(2)
+
+with col[0]:
+    r"""
+    $$
+    \varphi_0(x) = \frac {1} {2} x^2 - \frac {3} {2} x + 1,
+    \\[0.3 cm]
+    \varphi_1(x) = - x^2 + 2 x,
+    \\[0.3 cm]
+    \varphi_2(x) = \frac {1} {2} x^2 - \frac {1} {2} x.
+    $$
+    """
+with col[1]:
+    x = np.linspace(0, 2, 200)
+    y_0 = 0.5 * x ** 2 - 1.5 * x + 1
+    y_1 = - x ** 2 + 2 * x
+    y_2 = 0.5 * x ** 2 - 0.5 * x
+
+    plt.plot(x, y_0)
+    plt.plot(x, y_1)
+    plt.plot(x, y_2)
+    plt.grid()
+    plt.legend([r"$\varphi_0$", r"$\varphi_1$", r"$\varphi_2$"])
+    st.pyplot(plt.gcf())
+    plt.clf()

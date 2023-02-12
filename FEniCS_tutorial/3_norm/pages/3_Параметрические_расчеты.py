@@ -85,3 +85,8 @@ with col[1]:
 f"$L^2 = {errornorm(u1, u2, 'L2')}$ (`errornorm(u1, u2, 'L2')`)"
 f"$H^1 = {errornorm(u1, u2, 'H1')}$ (`errornorm(u1, u2, 'H1')`)"
 f"$H_0^1 = {errornorm(u1, u2, 'H10')}$ (`errornorm(u1, u2, 'H10')`)"
+
+# a = u1 * u1 * ds
+# b = u2 * u2 * ds
+
+#f"$boundary = {assemble(b) - assemble(a)}$"
