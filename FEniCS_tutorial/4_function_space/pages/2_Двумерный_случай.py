@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import imageio
 from os.path import abspath, join, dirname
 import numpy as np
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 img_dir = join(dirname(dirname(abspath(__file__))), "images")
 
@@ -189,125 +190,136 @@ $$
 $$
 
 базисные функции принимают вид:
+
+$$
+\varphi_0(x, y) = 1 - x - y,
+\\[0.3 cm]
+\varphi_1(x, y) = x,
+\\[0.3 cm]
+\varphi_2(x, y) = y.
+$$
 """
-
-col = st.columns(2)
-
-with col[0]:
-    r"""
-    $$
-    \varphi_0(x, y) = 1 - x - y,
-    \\[0.3 cm]
-    \varphi_1(x, y) = x,
-    \\[0.3 cm]
-    \varphi_2(x, y) = y.
-    $$
-    """
-
-x = np.linspace(0, 1, 20)
-y = np.array(x)
-
-x, y = np.meshgrid(x, y)
-
-z_0 = 1 - x - y
-z_1 = x
-z_2 = y
-
-z = np.array(x)
-
-for i in range(z_0.shape[0]):
-    for j in range(z_0.shape[1]):
-        z[i][j] = max(z_0[i][j], z_1[i][j], z_2[i][j])
-
-with col[1]:
-    # fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-    fig = plt.figure()
-    ax = fig.add_subplot(projection="3d")
-
-    ax.plot_surface(x, y, z)
-
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
-    ax.set_zlabel("z")
-
-    ax.view_init(60, -60)
-
-    st.pyplot(fig)
-    plt.clf()
 
 col = st.columns(3)
 
 with col[0]:
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(projection="3d")
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
 
-    ax.plot_surface(x, y, z_0)
+    v = np.array([
+        [0, 0, 1],
+        [0, 1, 0],
+        [1, 0, 0],
+    ])
 
-    ax.set_xlabel("x", fontsize=20)
-    ax.set_ylabel("y", fontsize=20)
-    ax.set_zlabel("z", fontsize=20)
+    ax.scatter3D(v[:, 0], v[:, 1], v[:, 2])
 
-    ax.set_title(r"$\varphi_0$", fontsize=20)
+    verts = [
+        [v[0], v[1], v[2]],
+    ]
 
-    ax.view_init(15, 120)
+    ax.add_collection3d(
+        Poly3DCollection(verts, facecolors='cyan', linewidths=1, edgecolors='r', alpha=.25))
+
+    plt.xlabel("$x$")
+    plt.ylabel("$y$")
+    fig.suptitle(r"$\varphi_0$")
+
+    #ax.view_init(30, -120)
 
     st.pyplot(fig)
-    plt.clf()
 
 with col[1]:
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(projection="3d")
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
 
-    ax.plot_surface(x, y, z_1)
+    v = np.array([
+        [0, 0, 0],
+        [0, 1, 0],
+        [1, 0, 1],
+    ])
 
-    ax.set_xlabel("x", fontsize=20)
-    ax.set_ylabel("y", fontsize=20)
-    ax.set_zlabel("z", fontsize=20)
+    ax.scatter3D(v[:, 0], v[:, 1], v[:, 2])
 
-    ax.set_title(r"$\varphi_1$", fontsize=20)
+    verts = [
+        [v[0], v[1], v[2]],
+    ]
+
+    ax.add_collection3d(
+        Poly3DCollection(verts, facecolors='cyan', linewidths=1, edgecolors='r', alpha=.25))
+
+    plt.xlabel("$x$")
+    plt.ylabel("$y$")
+    fig.suptitle(r"$\varphi_1$")
 
     ax.view_init(30, -120)
 
     st.pyplot(fig)
-    plt.clf()
-
-    cur_x = np.linspace(0, 1, 5)
-    cur_z_1 = cur_x
-
-    plt.plot(cur_x, cur_z_1)
-
-    plt.xlabel("$x$", fontsize=20)
-    plt.ylabel("$z$", fontsize=20)
-
-    plt.suptitle(r"$\varphi_1$", fontsize=20)
-
-    st.pyplot(plt.gcf())
-    plt.clf()
 
 with col[2]:
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(projection="3d")
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
 
-    ax.plot_surface(x, y, z_2)
+    v = np.array([
+        [0, 0, 0],
+        [0, 1, 1],
+        [1, 0, 0],
+    ])
 
-    ax.set_xlabel("x", fontsize=20)
-    ax.set_ylabel("y", fontsize=20)
-    ax.set_zlabel("z", fontsize=20)
+    ax.scatter3D(v[:, 0], v[:, 1], v[:, 2])
 
-    ax.set_title(r"$\varphi_2$", fontsize=20)
+    verts = [
+        [v[0], v[1], v[2]],
+    ]
+
+    ax.add_collection3d(
+        Poly3DCollection(verts, facecolors='cyan', linewidths=1, edgecolors='r', alpha=.25))
+
+    plt.xlabel("$x$")
+    plt.ylabel("$y$")
+    fig.suptitle(r"$\varphi_2$")
+
+    ax.view_init(30, -120)
 
     st.pyplot(fig)
-    plt.clf()
 
-    cur_y = np.linspace(0, 1, 5)
-    cur_z_2 = cur_y
+"#### Глобальный базис"
 
-    plt.plot(cur_y, cur_z_2)
+with st.columns(2)[0]:
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
 
-    plt.xlabel("$y$", fontsize=20)
-    plt.ylabel("$z$", fontsize=20)
+    v = np.array([
+        [-1, 0, 0],
+        [-1, 1, 0],
+        [0, -1, 0],
+        [0, 0, 1],
+        [0, 1, 0],
+        [1, -1, 0],
+        [1, 0, 0],
 
-    plt.suptitle(r"$\varphi_2$", fontsize=20)
+        [-2, -2, 0],
+        [-2, 2, 0],
+        [2, 2, 0],
+        [2, -2, 0],
+    ])
 
-    st.pyplot(plt.gcf())
-    plt.clf()
+    ax.scatter3D(v[:, 0], v[:, 1], v[:, 2])
+
+    verts = [
+        [v[0], v[1], v[3]],
+        [v[1], v[4], v[3]],
+        [v[0], v[2], v[3]],
+        [v[4], v[6], v[3]],
+        [v[2], v[5], v[3]],
+        [v[3], v[5], v[6]],
+        [v[7], v[8], v[9], v[10]]
+    ]
+
+    ax.add_collection3d(
+        Poly3DCollection(verts, facecolors='cyan', linewidths=1, edgecolors='r', alpha=.25))
+
+    plt.xlabel("$x$")
+    plt.ylabel("$y$")
+
+    st.pyplot(fig)

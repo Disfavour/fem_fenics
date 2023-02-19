@@ -5,7 +5,6 @@ from fenics import *
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 img_dir = join(dirname(dirname(abspath(__file__))), "images")
 
 numerated_interval = imageio.imread_v2(join(img_dir, "numerated_interval.png"))
@@ -147,12 +146,41 @@ with col[0]:
     $$
     """
 with col[1]:
-    x = np.linspace(0, 1, 100)
+    n = 10
+    x = np.linspace(-1, 2, n)
+
     y_0 = -x + 1
     y_1 = x
 
     plt.plot(x, y_0)
     plt.plot(x, y_1)
+    plt.grid()
+    plt.legend([r"$\varphi_0$", r"$\varphi_1$"])
+    st.pyplot(plt.gcf())
+    plt.clf()
+
+r"""
+#### Глобальный базис
+"""
+
+with st.columns(2)[0]:
+    n = 300
+    x = np.linspace(-1, 2, n)
+
+    y_0 = np.array(x)
+    y_0[:n // 3] = x[n // 3: 2 * n // 3]
+    y_0[n // 3: 2 * n // 3] = -x[n // 3: 2 * n // 3] + 1
+    y_0[2 * n // 3:] = np.zeros(n // 3)
+
+    y_1 = np.array(x)
+    y_1[:n // 3] = np.zeros(n // 3)
+    y_1[n // 3: 2 * n // 3] = x[n // 3: 2 * n // 3]
+    y_1[2 * n // 3:] = -x[n // 3: 2 * n // 3] + 1
+
+    plt.plot(x, y_0)
+    plt.plot(x, y_1)
+    plt.plot((0, 0), (-0.2, 1.2), "r--")
+    plt.plot((1, 1), (-0.2, 1.2), "r--")
     plt.grid()
     plt.legend([r"$\varphi_0$", r"$\varphi_1$"])
     st.pyplot(plt.gcf())
@@ -249,7 +277,9 @@ with col[0]:
     $$
     """
 with col[1]:
-    x = np.linspace(0, 2, 200)
+    n = 200
+    x = np.linspace(0, 2, n)
+
     y_0 = 0.5 * x ** 2 - 1.5 * x + 1
     y_1 = - x ** 2 + 2 * x
     y_2 = 0.5 * x ** 2 - 0.5 * x
@@ -257,6 +287,39 @@ with col[1]:
     plt.plot(x, y_0)
     plt.plot(x, y_1)
     plt.plot(x, y_2)
+    plt.grid()
+    plt.legend([r"$\varphi_0$", r"$\varphi_1$", r"$\varphi_2$"])
+    st.pyplot(plt.gcf())
+    plt.clf()
+
+r"""
+#### Глобальный базис
+"""
+
+with st.columns(2)[0]:
+    n = 300
+    x = np.linspace(-2, 4, n)
+
+    y_0 = np.array(x)
+    y_0[:n//3] =0.5 * x[n//2:5*n//6] ** 2 - 1.5 * x[n//2:5*n//6] + 1
+    y_0[n//3:2*n//3] = 0.5 * x[n//3:2*n//3] ** 2 - 1.5 * x[n//3:2*n//3] + 1
+    y_0[2*n//3:] = 0
+
+    y_1 = np.array(x)
+    y_1[:n // 3] = 0
+    y_1[n // 3: 2 * n // 3] = - x[n // 3:2 * n // 3] ** 2 + 2 * x[n // 3: 2 * n // 3]
+    y_1[2 * n // 3:] = 0
+
+    y_2 = np.array(x)
+    y_2[:n // 3] = 0
+    y_2[n // 3:2 * n // 3] = 0.5 * x[n // 3:2 * n // 3] ** 2 - 0.5 * x[n // 3:2 * n // 3]
+    y_2[2 * n // 3:] = 0.5 * x[n // 6: n // 2] ** 2 - 0.5 * x[n // 6: n // 2]
+
+    plt.plot(x, y_0)
+    plt.plot(x, y_1)
+    plt.plot(x, y_2)
+    plt.plot((0, 0), (-0.2, 1.2), "r--")
+    plt.plot((2, 2), (-0.2, 1.2), "r--")
     plt.grid()
     plt.legend([r"$\varphi_0$", r"$\varphi_1$", r"$\varphi_2$"])
     st.pyplot(plt.gcf())

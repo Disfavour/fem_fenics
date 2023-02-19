@@ -32,7 +32,7 @@ with st.expander("Пример"):
 
         V = FunctionSpace(mesh, "CG", 1)
 
-        g = Expression("1 + x[0]*x[0] + 2*x[1]*x[1]", degree=2)
+        g = Expression("1 + x[0]*x[0] + 2*x[1]*x[1]", degree=2, domain=mesh)
 
         def boundary(x, on_boundary):
             return on_boundary
@@ -48,31 +48,34 @@ with st.expander("Пример"):
         u = Function(V)
         solve(a == L, u, bc)
 
-    col = st.columns(2)
+    "#### $L^2$"
+    col = st.columns(3)
 
     with col[0]:
-        "#### FEniCS"
         with st.echo():
             L2 = errornorm(g, u, "L2")
-        L2
-
+        st.write(L2)
 
     with col[1]:
-        "#### Пример реализации"
+        with st.echo():
+            L2_ = assemble((g - u) ** 2 * dx) ** 0.5
+        st.write(L2_)
+
+    with col[2]:
         with st.echo():
             from scipy import integrate
 
-            fun = lambda y, x: (g(x, y) - u(x, y)) ** 2
-            L2_ = integrate.dblquad(fun, 0, 1, 0, 1)[0] ** 0.5
-        L2_
+            fun = lambda y, x: (u(x, y) - g(x, y)) ** 2
+            L2__ = integrate.dblquad(fun, 0, 1, 0, 1)[0] ** 0.5
+        st.write(L2__)
 
-    if np.allclose(L2, L2_):
+    if np.allclose(L2, L2_) and np.allclose(L2, L2__):
         st.success("Значения достаточно близки")
     else:
         st.error("Значения различаются")
 
-    "### $H^1$"
-    col = st.columns(2)
+    "#### $H^1$"
+    col = st.columns(3)
 
     with col[0]:
         with st.echo():
@@ -81,48 +84,24 @@ with st.expander("Пример"):
 
     with col[1]:
         with st.echo():
-            from scipy import integrate
-
-            h = 1e-6
-
-            fun = lambda y, x: \
-                (g(x, y) - u(x, y)) ** 2 \
-                + ((g(x + h, y) - g(x - h, y)) / (2 * h) - (u(x + h, y) - u(x - h, y)) / (2 * h)) ** 2 \
-                + ((g(x, y + h) - g(x, y - h)) / (2 * h) - (u(x, y + h) - u(x, y - h)) / (2 * h)) ** 2
-
-            H_1_ = integrate.dblquad(fun, 0, 1, 0, 1)[0] ** 0.5
+            H_1_ = assemble(((g - u) ** 2 + grad(g - u) ** 2) * dx) ** 0.5
         st.write(H_1_)
 
-    if np.allclose(L2, L2_):
-        st.success("Значения достаточно близки")
-    else:
-        st.error("Значения различаются")
-
-    "### $H_0^1$"
-    col = st.columns(2)
-
-    with col[0]:
-        with st.echo():
-            H_1_0 = errornorm(g, u, "H10")
-        st.write(H_1_0)
-
-    with col[1]:
+    with col[2]:
         with st.echo():
             from scipy import integrate
 
             h = 1e-6
-
-            u_ = lambda x, y: u(x, y) if h < x < 1 - h and h < y < 1 - h else 0
 
             fun = lambda y, x: \
                 (g(x, y) - u(x, y)) ** 2 \
                 + ((g(x + h, y) - g(x - h, y)) / (2 * h) - (u(x + h, y) - u(x - h, y)) / (2 * h)) ** 2 \
                 + ((g(x, y + h) - g(x, y - h)) / (2 * h) - (u(x, y + h) - u(x, y - h)) / (2 * h)) ** 2
 
-            H_1_0_ = integrate.dblquad(fun, 0, 1, 0, 1)[0] ** 0.5
-        st.write(H_1_0_)
+            H_1__ = integrate.dblquad(fun, 0, 1, 0, 1)[0] ** 0.5
+        st.write(H_1__)
 
-    if np.allclose(H_1_0, H_1_0_):
+    if np.allclose(H_1, H_1_) and np.allclose(H_1, H_1__):
         st.success("Значения достаточно близки")
     else:
         st.error("Значения различаются")

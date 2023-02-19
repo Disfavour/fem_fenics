@@ -6,7 +6,9 @@ import imageio
 img_dir = join(dirname(dirname(abspath(__file__))), "images")
 
 lagrange_interval = imageio.imread_v2(join(img_dir, "d1m.png"))
-lagrange_triangle = imageio.imread_v2(join(img_dir, "d2m.png"))
+lagrange_triangle = imageio.imread_v2(join(img_dir, "lagrange2d.png"))
+lagrange_tetrahedron = imageio.imread_v2(join(img_dir, "lagrange3d.png"))
+
 
 r"""
 # Функциональные пространства в FEniCS
@@ -51,7 +53,7 @@ with st.expander("Пример использования"):
     """
 
 r"""
-## Одномерные лагранжевы элементы
+## 1-мерные лагранжевы элементы
 
 Для более высокой степени элемента задействуются точки внутри отрезка.
 """
@@ -59,8 +61,15 @@ r"""
 st.image(lagrange_interval)
 
 r"""
-## Двумерные лагранжевы элементы
+## 2-мерные лагранжевы элементы
 
 Для более высокой степени элемента задействуются точки на ребрах и внутри треугольника.
 """
 st.image(lagrange_triangle)
+
+r"""
+## 3-мерные лагранжевы элементы
+
+Для более высокой степени элемента задействуются точки на ребрах и внутри тетраэдра.
+"""
+st.image(lagrange_tetrahedron)
