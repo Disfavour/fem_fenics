@@ -7,8 +7,8 @@ import numpy as np
 
 img_dir = join(dirname(dirname(abspath(__file__))), "images")
 
-numerated_interval = imageio.imread_v2(join(img_dir, "numerated_interval.png"))
-numerated_interval_3p = imageio.imread_v2(join(img_dir, "numerated_interval_3p.png"))
+interval_1_degree = imageio.imread_v2(join(img_dir, "interval_1_degree.png"))
+interval_2_degree = imageio.imread_v2(join(img_dir, "interval_2_degree.png"))
 
 r"""
 # Одномерный случай
@@ -34,9 +34,10 @@ $$
 Сетка при $l_0 = 0, \ l_1 = 1$ и $n = 5$:
 """
 
-plot(UnitIntervalMesh(5))
-st.pyplot(plt.gcf())
-plt.clf()
+with st.columns(2)[0]:
+    plot(UnitIntervalMesh(5))
+    st.pyplot(plt.gcf())
+    plt.clf()
 
 r"""
 Конечный элемент представляет собой ячейку вместе с аппроксимацией на ней.
@@ -46,7 +47,7 @@ r"""
 Рассмотрим ячейку $[x_0, x_1]$.
 """
 
-st.image(numerated_interval)
+st.image(interval_1_degree)
 
 r"""
 Аппроксимация по 2-м узлам полиномом 1-й степени
@@ -135,7 +136,7 @@ $$
 При $x_0 = 0$ и $x_1 = 1$ базисные функции принимают вид:
 """
 
-col = st.columns(2)
+col = st.columns(3)
 
 with col[0]:
     r"""
@@ -147,7 +148,7 @@ with col[0]:
     """
 with col[1]:
     n = 10
-    x = np.linspace(-1, 2, n)
+    x = np.linspace(0, 1, n)
 
     y_0 = -x + 1
     y_1 = x
@@ -156,43 +157,40 @@ with col[1]:
     plt.plot(x, y_1)
     plt.grid()
     plt.legend([r"$\varphi_0$", r"$\varphi_1$"])
+    plt.suptitle("Локальный базис")
+    plt.xlim(0, 1)
     st.pyplot(plt.gcf())
     plt.clf()
 
-r"""
-#### Глобальный базис
-"""
-
-with st.columns(2)[0]:
+with col[2]:
     n = 300
-    x = np.linspace(-1, 2, n)
+    x = np.linspace(0, 2, n)
 
     y_0 = np.array(x)
-    y_0[:n // 3] = x[n // 3: 2 * n // 3]
-    y_0[n // 3: 2 * n // 3] = -x[n // 3: 2 * n // 3] + 1
-    y_0[2 * n // 3:] = np.zeros(n // 3)
+    y_0[:n//2] = -x[:n//2] + 1
+    y_0[n//2:] = 0
 
     y_1 = np.array(x)
-    y_1[:n // 3] = np.zeros(n // 3)
-    y_1[n // 3: 2 * n // 3] = x[n // 3: 2 * n // 3]
-    y_1[2 * n // 3:] = -x[n // 3: 2 * n // 3] + 1
+    y_1[:n//2] = x[:n//2]
+    y_1[n//2:] = -x[:n//2] + 1
 
     plt.plot(x, y_0)
     plt.plot(x, y_1)
-    plt.plot((0, 0), (-0.2, 1.2), "r--")
-    plt.plot((1, 1), (-0.2, 1.2), "r--")
+    plt.plot((1, 1), (-0.05, 1.05), "r--")
     plt.grid()
     plt.legend([r"$\varphi_0$", r"$\varphi_1$"])
+    plt.suptitle("Глобальный базис")
+    plt.xlim(0, 2)
     st.pyplot(plt.gcf())
     plt.clf()
 
 r"""
 ## Кусочно-квадратичная аппроксимация
 
-Рассмотрим ячейку $[x_0, x_2], \  x_0 < x_1 < x_2$.
+Рассмотрим ячейку $[x_0, x_1], \  x_0 < x_c < x_1$.
 """
 
-st.image(numerated_interval_3p)
+st.image(interval_2_degree)
 
 r"""
 Аппроксимация по 3-м узлам полиномом 2-й степени
@@ -204,7 +202,7 @@ $$
 Применяем интерполяционный многочлен Лагранжа:
 
 $$
-L(x) = \sum \limits_{i=0}^n y_i l_i(x),
+L(x) = \sum \limits_{i=0}^n f_i l_i(x),
 \\[0.3 cm]
 l_i(x) = \prod \limits_{j=0, \ j \ne i}^n \frac {x - x_j} {x_i - x_j}.
 $$
@@ -212,9 +210,9 @@ $$
 Искомый полином:
 
 $$
-f_0 \frac {(x - x_1)(x - x_2)} {(x_0 - x_1)(x_0 - x_2)}
-+ f_1 \frac {(x - x_0)(x - x_2)} {(x_1 - x_0)(x_1 - x_2)}
-+ f_2 \frac {(x - x_0)(x - x_1)} {(x_2 - x_0)(x_2 - x_1)}.
+f_0 \frac {(x - x_c)(x - x_1)} {(x_0 - x_c)(x_0 - x_1)}
++ f_1 \frac {(x - x_0)(x - x_1)} {(x_c - x_0)(x_c - x_1)}
++ f_2 \frac {(x - x_0)(x - x_c)} {(x_1 - x_0)(x_1 - x_c)}.
 $$
 
 ### Конечно-элементный базис
@@ -225,9 +223,9 @@ $$
 \begin{cases}
 \varphi_0(x_0) = 1
 \\
-\varphi_0(x_1) = 0
+\varphi_0(x_c) = 0
 \\
-\varphi_0(x_2) = 0
+\varphi_0(x_1) = 0
 \end{cases},
 
 \quad \quad
@@ -235,9 +233,9 @@ $$
 \begin{cases}
 \varphi_1(x_0) = 0
 \\
-\varphi_1(x_1) = 1
+\varphi_1(x_c) = 1
 \\
-\varphi_1(x_2) = 0
+\varphi_1(x_1) = 0
 \end{cases},
 
 \quad \quad
@@ -245,82 +243,79 @@ $$
 \begin{cases}
 \varphi_2(x_0) = 0
 \\
-\varphi_2(x_1) = 0
+\varphi_2(x_c) = 0
 \\
-\varphi_2(x_2) = 1
+\varphi_2(x_1) = 1
 \end{cases}.
 $$
 
 С помощью интерполяционного многочлена Лагранжа получаем базисные функции:
 
 $$
-\varphi_0 = \frac {(x - x_1)(x - x_2)} {(x_0 - x_1)(x_0 - x_2)},
+\varphi_0 = \frac {(x - x_c)(x - x_1)} {(x_0 - x_c)(x_0 - x_1)},
 \\[0.3 cm]
-\varphi_1 = \frac {(x - x_0)(x - x_2)} {(x_1 - x_0)(x_1 - x_2)},
+\varphi_1 = \frac {(x - x_0)(x - x_1)} {(x_c - x_0)(x_c - x_1)},
 \\[0.3 cm]
-\varphi_2 = \frac {(x - x_0)(x - x_1)} {(x_2 - x_0)(x_2 - x_1)}.
+\varphi_2 = \frac {(x - x_0)(x - x_c)} {(x_1 - x_0)(x_1 - x_c)}.
 $$
 
-При $x_0 = 0, \ x_1 = 1, \ x_2 = 2$ базисные функции принимают вид:
+При $x_0 = 0, \ x_c = 0.5, \ x_1 = 1$ базисные функции принимают вид:
 """
 
-col = st.columns(2)
+col = st.columns(3)
 
 with col[0]:
     r"""
     $$
-    \varphi_0(x) = \frac {1} {2} x^2 - \frac {3} {2} x + 1,
+    \varphi_0(x) = 2 x^2 - 3 x + 1,
     \\[0.3 cm]
-    \varphi_1(x) = - x^2 + 2 x,
+    \varphi_1(x) = - 4 x^2 + 4 x,
     \\[0.3 cm]
-    \varphi_2(x) = \frac {1} {2} x^2 - \frac {1} {2} x.
+    \varphi_2(x) = 2 x^2 - x.
     $$
     """
-with col[1]:
-    n = 200
-    x = np.linspace(0, 2, n)
 
-    y_0 = 0.5 * x ** 2 - 1.5 * x + 1
-    y_1 = - x ** 2 + 2 * x
-    y_2 = 0.5 * x ** 2 - 0.5 * x
+with col[1]:
+    n = 100
+    x = np.linspace(0, 1, n)
+
+    y_0 = 2 * x ** 2 - 3 * x + 1
+    y_1 = - 4 * x ** 2 + 4 * x
+    y_2 = 2 * x ** 2 - x
 
     plt.plot(x, y_0)
     plt.plot(x, y_1)
     plt.plot(x, y_2)
     plt.grid()
     plt.legend([r"$\varphi_0$", r"$\varphi_1$", r"$\varphi_2$"])
+    plt.suptitle("Локальный базис")
+    plt.xlim(0, 1)
     st.pyplot(plt.gcf())
     plt.clf()
 
-r"""
-#### Глобальный базис
-"""
-
-with st.columns(2)[0]:
+with col[2]:
     n = 300
-    x = np.linspace(-2, 4, n)
+    x = np.linspace(0, 2, n)
 
     y_0 = np.array(x)
-    y_0[:n//3] =0.5 * x[n//2:5*n//6] ** 2 - 1.5 * x[n//2:5*n//6] + 1
-    y_0[n//3:2*n//3] = 0.5 * x[n//3:2*n//3] ** 2 - 1.5 * x[n//3:2*n//3] + 1
-    y_0[2*n//3:] = 0
+    y_0[:n//2] = 2 * x[:n//2] ** 2 - 3 * x[:n//2] + 1
+    y_0[n//2:] = 0
 
     y_1 = np.array(x)
-    y_1[:n // 3] = 0
-    y_1[n // 3: 2 * n // 3] = - x[n // 3:2 * n // 3] ** 2 + 2 * x[n // 3: 2 * n // 3]
-    y_1[2 * n // 3:] = 0
+    y_1[:n//2] = - 4 * x[:n//2] ** 2 + 4 * x[:n//2]
+    y_1[n//2:] = 0
 
     y_2 = np.array(x)
-    y_2[:n // 3] = 0
-    y_2[n // 3:2 * n // 3] = 0.5 * x[n // 3:2 * n // 3] ** 2 - 0.5 * x[n // 3:2 * n // 3]
-    y_2[2 * n // 3:] = 0.5 * x[n // 6: n // 2] ** 2 - 0.5 * x[n // 6: n // 2]
+    y_2[:n//2] = 2 * x[:n//2] ** 2 - x[:n//2]
+    y_2[n//2:] = 2 * x[:n//2] ** 2 - 3 * x[:n//2] + 1
 
     plt.plot(x, y_0)
     plt.plot(x, y_1)
     plt.plot(x, y_2)
-    plt.plot((0, 0), (-0.2, 1.2), "r--")
-    plt.plot((2, 2), (-0.2, 1.2), "r--")
+    plt.plot((1, 1), (-0.05, 1.05), "r--")
     plt.grid()
     plt.legend([r"$\varphi_0$", r"$\varphi_1$", r"$\varphi_2$"])
+    plt.suptitle("Глобальный базис")
+    plt.xlim(0, 2)
     st.pyplot(plt.gcf())
     plt.clf()

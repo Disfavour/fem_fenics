@@ -225,7 +225,7 @@ with col[0]:
     plt.ylabel("$y$")
     fig.suptitle(r"$\varphi_0$")
 
-    #ax.view_init(30, -120)
+    # ax.view_init(30, -120)
 
     st.pyplot(fig)
 
@@ -289,7 +289,7 @@ with st.columns(2)[0]:
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    v = np.array([
+    vertexes_tetrahedron = np.array([
         [-1, 0, 0],
         [-1, 1, 0],
         [0, -1, 0],
@@ -297,27 +297,44 @@ with st.columns(2)[0]:
         [0, 1, 0],
         [1, -1, 0],
         [1, 0, 0],
-
-        [-2, -2, 0],
-        [-2, 2, 0],
-        [2, 2, 0],
-        [2, -2, 0],
     ])
 
-    ax.scatter3D(v[:, 0], v[:, 1], v[:, 2])
-
-    verts = [
-        [v[0], v[1], v[3]],
-        [v[1], v[4], v[3]],
-        [v[0], v[2], v[3]],
-        [v[4], v[6], v[3]],
-        [v[2], v[5], v[3]],
-        [v[3], v[5], v[6]],
-        [v[7], v[8], v[9], v[10]]
+    polygons_tetrahedron = [
+        [vertexes_tetrahedron[0], vertexes_tetrahedron[1], vertexes_tetrahedron[3]],
+        [vertexes_tetrahedron[1], vertexes_tetrahedron[4], vertexes_tetrahedron[3]],
+        [vertexes_tetrahedron[0], vertexes_tetrahedron[2], vertexes_tetrahedron[3]],
+        [vertexes_tetrahedron[4], vertexes_tetrahedron[6], vertexes_tetrahedron[3]],
+        [vertexes_tetrahedron[2], vertexes_tetrahedron[5], vertexes_tetrahedron[3]],
+        [vertexes_tetrahedron[3], vertexes_tetrahedron[5], vertexes_tetrahedron[6]],
     ]
 
+    vertexes_mesh = []
+
+    for x in [i - 2 for i in range(5)]:
+        for y in [i - 2 for i in range(5)]:
+            vertexes_mesh.append((x, y, 0))
+
+    vertexes_mesh = np.array(vertexes_mesh)
+
+    polygons_mesh = []
+
+    i = -2
+    for column in range(4):
+        i += 1
+        for row in range(4):
+            i += 1
+
+            polygons_mesh.append((vertexes_mesh[i], vertexes_mesh[i + 1], vertexes_mesh[i + 5]))
+            polygons_mesh.append((vertexes_mesh[i + 6], vertexes_mesh[i + 1], vertexes_mesh[i + 5]))
+
+    ax.scatter3D(vertexes_tetrahedron[:, 0], vertexes_tetrahedron[:, 1], vertexes_tetrahedron[:, 2])
+    ax.scatter3D(vertexes_mesh[:, 0], vertexes_mesh[:, 1], vertexes_mesh[:, 2], s=0.3)
+
     ax.add_collection3d(
-        Poly3DCollection(verts, facecolors='cyan', linewidths=1, edgecolors='r', alpha=.25))
+        Poly3DCollection(polygons_tetrahedron, facecolors='cyan', linewidths=1, edgecolors='r', alpha=.3))
+
+    ax.add_collection3d(
+        Poly3DCollection(polygons_mesh, facecolors='blue', linewidths=0.3, edgecolors='g', alpha=0.00))
 
     plt.xlabel("$x$")
     plt.ylabel("$y$")
