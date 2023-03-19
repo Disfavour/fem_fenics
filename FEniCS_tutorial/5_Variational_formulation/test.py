@@ -206,6 +206,7 @@ def demo_bcs():
     error_max = np.max(np.abs(vertex_values_u_e -
                               vertex_values_u))
     print('error_max =', error_max)
+    print(errornorm(u_e, u))
 
     # Save and plot solution
     #vtkfile = File('poisson_extended/solution_bcs.pvd')
