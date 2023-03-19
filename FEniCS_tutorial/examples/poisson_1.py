@@ -17,7 +17,7 @@ def boundary(x, on_boundary):
 bc = DirichletBC(V, u_D, boundary)
 
 u = TrialFunction(V)
-v = TestFunction(V)
+v = TestFunction(V) 
 f = Constant(-6.0)
 a = dot(grad(u), grad(v))*dx
 L = f*v*dx
