@@ -4,7 +4,9 @@ import streamlit as st
 st.set_page_config(layout="wide")
 
 r"""
-# Отчет №2
+# Спецсеминар
+
+## Отчет 2
 
 #### Выполнил студент группы СТФИ-122
 

@@ -72,13 +72,13 @@ $$
 ## Набла
 
 $$
+\nabla = \left( \frac {\partial} {\partial x_1}, \dots, \frac {\partial} {\partial x_n} \right)
+\\[0.5 cm]
 \operatorname{grad} \varphi = \nabla \varphi
 \\[0.5 cm]
 \operatorname{div} \bold{f} = \nabla \cdot \bold{f}
 \\[0.5 cm]
 \operatorname{rot} \bold{f} = \nabla \times \bold{f}
-\\[0.5 cm]
-\nabla = \left( \frac {\partial} {\partial x_1}, \dots, \frac {\partial} {\partial x_n} \right)
 $$
 
 
@@ -90,23 +90,19 @@ $$
 $$
 
 
-## Теорема о дивергенции (формула Гаусса-Остроградского)
+## Теорема о дивергенции (Остроградского-Гаусса)
 
 $$
-\int \limits_\Omega \operatorname{div} \bold{f} dx = \int \limits_{\partial \Omega} \bold{f} \cdot \bm{n} \ ds
+\int \limits_\Omega \operatorname{div} \bold{f} \ dx = \int \limits_{\partial \Omega} \bold{f} \cdot n \ ds,
 $$
 
+где $n$ - внешняя нормаль.
 
-## Первая формула Грина
+
+### Нормальная производная
 
 $$
-\def \grad {\operatorname{grad}}
-\def \div {\operatorname{div}}
-
-\int \limits_\Omega (\psi \div \grad \varphi + \grad \psi \cdot \grad \varphi) \ dx
-= \int \limits_{\partial \Omega} \psi (\grad \varphi \cdot \bm n) \ ds
-= \int \limits_{\partial \Omega} \psi \frac {\partial \varphi} {\partial \bm{n}}\ ds
+\frac {\partial u} {\partial n} = \frac {\partial u} {\partial \bm{x}} \cdot n
+= \operatorname{grad} u \cdot n
 $$
-
-где, $\displaystyle \frac {\partial} {\partial \bm{n}}$ - нормальная производная по направлению внешней нормали.
 """
