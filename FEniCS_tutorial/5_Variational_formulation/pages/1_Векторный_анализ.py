@@ -4,13 +4,18 @@ import streamlit as st
 r"""
 # Векторный анализ
 
+- $\varphi,\ \psi, f_i$ - скалярные функции;
+- $y$ - точка;
+- $\bold {g}, \bold {f}$ - векторные поля;
+- $a,\ b$ - вещественные числа.
+
+
 Векторное поле:
 
 $$
 \bold{f} = \left( f_1, f_2, \dots, f_n \right).
 $$
 
-Пусть $\varphi,\ \psi$ - скалярная функция; $y$ - точка; $\bold {g}$ - векторное поле; $a,\ b$ - вещественные числа.
 
 
 ## Градиент
@@ -32,7 +37,7 @@ $$
 
 $$
 \operatorname{div} \bold{f} \big|_{y} = \lim_{V \to 0} \frac {1} {V} \left( \int \limits_{\partial \Omega} \bold{f}
-\cdot \bm n \ ds
+\cdot n \ ds
 \right)
 $$
 
@@ -47,7 +52,7 @@ $$
 ## Ротор
 
 $$
-\operatorname{rot} \bold{f} \big|_{y} = \lim_{V \to 0} \frac {1} {V} \left( \int \limits_{\partial \Omega} \bm n \times
+\operatorname{rot} \bold{f} \big|_{y} = \lim_{V \to 0} \frac {1} {V} \left( \int \limits_{\partial \Omega} n \times
 \bold{f} \ ds \right)
 $$
 
@@ -93,7 +98,7 @@ $$
 ## Теорема о дивергенции (Остроградского-Гаусса)
 
 $$
-\int \limits_\Omega \operatorname{div} \bold{f} \ dx = \int \limits_{\partial \Omega} \bold{f} \cdot n \ ds,
+\int \limits_\Omega \operatorname{div} \bold{f} \ d\bm{x} = \int \limits_{\partial \Omega} \bold{f} \cdot n \ ds,
 $$
 
 где $n$ - внешняя нормаль.
@@ -102,7 +107,6 @@ $$
 ### Нормальная производная
 
 $$
-\frac {\partial u} {\partial n} = \frac {\partial u} {\partial \bm{x}} \cdot n
-= \operatorname{grad} u \cdot n
+\frac {\partial u} {\partial n} = \operatorname{grad} u \cdot n
 $$
 """

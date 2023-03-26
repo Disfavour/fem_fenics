@@ -7,7 +7,7 @@ domain123 = Image.open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 
 
 
 r"""
-# Граничные условия Дирихле и Неймана
+# Смешанные граничные условия
 
 ## Краевая задача
 
@@ -17,15 +17,17 @@ $$
 \def \rot {\operatorname{rot}}
 
 \begin{aligned}
-- & \div (\kappa \grad u) = f \quad & \bold{x} & \in \Omega,
+- & \div (\kappa \grad u) = f \quad                             &\bm{x}& \in \Omega
 \\[0.5 cm]
-& u = u_D^i \quad & \bold{x} & \in \Gamma_D^i, \quad i = 0, 1, \dots
+& u = u_D \quad                                                 &\bm{x}& \in {\partial \Omega}_D
 \\[0.5 cm]
-& \kappa \frac {\partial u} {\partial \bm{n}} = g_i \quad & \bold{x} & \in \Gamma_N^i, \quad i = 0, 1, \dots
+& \kappa \frac {\partial u} {\partial n} = g \quad              &\bm{x}& \in {\partial \Omega}_N
 \\[0.5 cm]
-& \kappa \frac {\partial u} {\partial \bm{n}} + \alpha u = q_i \quad & \bold{x} & \in \Gamma_R^i, \quad i = 0, 1, \dots
+& \kappa \frac {\partial u} {\partial n} + \alpha u = q \quad   &\bm{x}& \in {\partial \Omega}_R
 \end{aligned}
 $$
+
+${\partial \Omega}_D, {\partial \Omega}_N, {\partial \Omega}_R$ - возможно неодносвязные границы.
 
 
 ## Вариационная формулировка
@@ -308,6 +310,6 @@ with col[1]:
 
 with st.columns([1, 2, 1])[1]:
     f"""
-    Норма ошибки $L^2 = {error_L2}$
+    $\| u_e - u \|_2 = {error_L2}$
     """
 

@@ -7,7 +7,7 @@ domain112 = Image.open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 
 
 
 r"""
-# Множественные условия Дирихле
+# Условия Дирихле на нескольких частях границы
 
 ## Краевая задача
 
@@ -267,6 +267,6 @@ with col[1]:
 
 with st.columns([1, 2, 1])[1]:
     f"""
-    Норма ошибки $L^2 = {error_L2}$
+    $\| u_e - u \|_2 = {error_L2}$
     """
 

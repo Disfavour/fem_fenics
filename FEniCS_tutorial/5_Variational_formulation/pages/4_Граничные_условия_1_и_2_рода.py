@@ -17,13 +17,15 @@ $$
 \def \rot {\operatorname{rot}}
 
 \begin{aligned}
-- & \div \grad u = f \quad & \bold{x} & \in \Omega,
+- & \div \grad u = f                            \quad &\bm{x}& \in \Omega
 \\[0.5 cm]
-& u = u_D \quad & \bold{x} & \in \Gamma_D,
+& u = u_D                                       \quad &\bm{x}& \in {\partial \Omega}_D
 \\[0.5 cm]
-& \frac {\partial u} {\partial \bm{n}} = g \quad & \bold{x} & \in \Gamma_N.
+& \frac {\partial u} {\partial \bm{n}} = g      \quad &\bm{x}& \in {\partial \Omega}_N
 \end{aligned}
 $$
+
+${\partial \Omega}_D, {\partial \Omega}_N$ - возможно неодносвязные границы.
 
 
 ## Вариационная формулировка
@@ -216,6 +218,6 @@ with col[1]:
 
 with st.columns([1, 2, 1])[1]:
     f"""
-    Норма ошибки $L^2 = {error_L2}$
+    $\| u_e - u \|_2 = {error_L2}$
     """
 
