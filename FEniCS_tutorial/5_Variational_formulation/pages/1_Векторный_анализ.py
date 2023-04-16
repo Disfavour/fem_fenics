@@ -21,7 +21,7 @@ $$
 ## Градиент
 
 $$
-\operatorname{grad} \varphi \big|_{y} = \lim_{V \to 0} \frac {1} {V} \left( \int \limits_{\partial \Omega} \varphi \ ds
+\operatorname{grad} \varphi = \lim_{V(\Omega) \to 0} \frac {1} {V(\Omega)} \left( \int \limits_{\partial \Omega} \varphi \ ds
 \right)
 $$
 
@@ -36,7 +36,7 @@ $$
 ## Дивергенция
 
 $$
-\operatorname{div} \bold{f} \big|_{y} = \lim_{V \to 0} \frac {1} {V} \left( \int \limits_{\partial \Omega} \bold{f}
+\operatorname{div} \bold{f} = \lim_{V(\Omega) \to 0} \frac {1} {V(\Omega)} \left( \int \limits_{\partial \Omega} \bold{f}
 \cdot n \ ds
 \right)
 $$
@@ -52,7 +52,7 @@ $$
 ## Ротор
 
 $$
-\operatorname{rot} \bold{f} \big|_{y} = \lim_{V \to 0} \frac {1} {V} \left( \int \limits_{\partial \Omega} n \times
+\operatorname{rot} \bold{f} = \lim_{V(\Omega) \to 0} \frac {1} {V(\Omega)} \left( \int \limits_{\partial \Omega} n \times
 \bold{f} \ ds \right)
 $$
 
