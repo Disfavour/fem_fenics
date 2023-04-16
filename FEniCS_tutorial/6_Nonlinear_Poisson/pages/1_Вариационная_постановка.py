@@ -22,7 +22,7 @@ $$
 \def \rot {\operatorname{rot}}
 
 \begin{aligned}
-- &\int \limits_\Omega v \div (q(u) \grad u) \ d\bm{x} = \int \limits_\Omega f v \ d\bm{x}
+- &\int \limits_\Omega v \div (q(u) \grad u) \ dx = \int \limits_\Omega f v \ dx.
 \end{aligned}
 $$
 
@@ -35,9 +35,9 @@ $$
 \def \f {\bold{f}}
 
 \begin{aligned}
-& \div (\varphi \f) = \f \cdot \grad \varphi + \varphi \div \f
+& \div (\varphi \f) = \f \cdot \grad \varphi + \varphi \div \f,
 \\[0.5 cm]
-& \varphi \div \f = \div (\varphi \f) - \f \cdot \grad \varphi
+& \varphi \div \f = \div (\varphi \f) - \f \cdot \grad \varphi.
 \end{aligned}
 $$
 
@@ -49,9 +49,9 @@ $$
 \def \rot {\operatorname{rot}}
 
 \begin{aligned}
-- &\int \limits_\Omega \div (v q(u) \grad u) \ d\bm{x}
-+ \int \limits_\Omega q(u) \grad u \cdot \grad v \ d\bm{x}
-= \int \limits_\Omega f v \ d\bm{x}
+- &\int \limits_\Omega \div (v q(u) \grad u) \ dx
++ \int \limits_\Omega q(u) \grad u \cdot \grad v \ dx
+= \int \limits_\Omega f v \ dx.
 \end{aligned}
 $$
 
@@ -63,7 +63,7 @@ $$
 \def \rot {\operatorname{rot}}
 
 \begin{aligned}
-\int \limits_\Omega \operatorname{div} \bold{f} \ d\bm{x} = \int \limits_{\partial \Omega} \bold{f} \cdot n \ d\bm{s}
+\int \limits_\Omega \operatorname{div} \bold{f} \ dx = \int \limits_{\partial \Omega} \bold{f} \cdot n \ ds.
 \end{aligned}
 $$
 
@@ -75,9 +75,9 @@ $$
 \def \rot {\operatorname{rot}}
 
 \begin{aligned}
-- &\int \limits_{\partial \Omega} v q(u) \grad u \cdot n \ d\bm{x}
-+ \int \limits_\Omega q(u) \grad u \cdot \grad v \ d\bm{x}
-= \int \limits_\Omega f v \ d\bm{x}
+- &\int \limits_{\partial \Omega} v q(u) \grad u \cdot n \ dx
++ \int \limits_\Omega q(u) \grad u \cdot \grad v \ dx
+= \int \limits_\Omega f v \ dx.
 \end{aligned}
 $$
 
@@ -89,14 +89,12 @@ $$
 \def \rot {\operatorname{rot}}
 
 \begin{aligned}
-&\int \limits_\Omega q(u) \grad u \cdot \grad v \ d\bm{x}
-= \int \limits_\Omega f v \ d\bm{x}
-\\[0.5 cm]
-&\int \limits_\Omega q(u) \grad u \cdot \grad v - f v \ d\bm{x} = 0
+&\int  \limits_\Omega q(u) \grad u \cdot \grad v  \ dx
+= \int \limits_\Omega f v \ dx.
 \end{aligned}
 $$
 
-Представление для FEniCS нелинейной задачи
+После преобразования получаем:
 
 $$
 \def \grad {\operatorname{grad}}
@@ -104,9 +102,7 @@ $$
 \def \rot {\operatorname{rot}}
 
 \begin{aligned}
-&F(u, v) = 0
-\\[0.5 cm]
-&F(u, v) = \int \limits_\Omega q(u) \grad u \cdot \grad v - f v \ d\bm{x} = 0
+&F(u, v) = \int \limits_\Omega ( q(u) \grad u \cdot \grad v - f v ) \ dx = 0.
 \end{aligned}
 $$
 """
