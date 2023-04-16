@@ -20,6 +20,8 @@ subdomain_1 = CompiledSubDomain("x[1] >= 0.5 - tol", tol=tol)
 materials.set_all(0)
 subdomain_1.mark(materials, 1)
 
+#File("materials.xml") << materials
+
 # plot(materials)
 # plt.show()
 
@@ -35,8 +37,9 @@ subdomain_1.mark(materials, 1)
 # plt.show()
 
 
-class K(Expression):
+class K(UserExpression):
     def __init__(self, materials, k_0, k_1, **kwargs):
+        super().__init__(**kwargs)
         self.materials = materials
         self.k_0 = k_0
         self.k_1 = k_1
