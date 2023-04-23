@@ -1,0 +1,47 @@
+from fenics import *
+import matplotlib.pyplot as plt
+
+mesh = Mesh("mshes/res.xml")
+
+physical_region = MeshFunction("size_t", mesh, "mshes/res_physical_region.xml")
+facet_region = MeshFunction("size_t", mesh, "mshes/res_facet_region.xml")
+
+ds = Measure("ds", domain=mesh, subdomain_data=physical_region)
+dx = Measure("dx", domain=mesh, subdomain_data=physical_region)
+
+ds1 = Measure("ds", domain=mesh, subdomain_data=facet_region)
+dx1 = Measure("dx", domain=mesh, subdomain_data=facet_region)
+
+f = Constant(1)
+#f = Expression("x[0] + x[1] + 1", degree=1)
+
+print(assemble(f * ds))
+print(assemble(f * ds(35)))
+print(assemble(f * ds(31)))
+print(assemble(f * ds(32)))
+print(assemble(f * ds(33)))
+print(assemble(f * ds(34)))
+print()
+print(assemble(f * dx))
+print(assemble(f * dx(35)))
+print(assemble(f * dx(31)))
+print(assemble(f * dx(32)))
+print(assemble(f * dx(33)))
+print(assemble(f * dx(34)))
+print()
+print(assemble(f * ds1))
+print(assemble(f * ds1(35)))
+print(assemble(f * ds1(31)))
+print(assemble(f * ds1(32)))
+print(assemble(f * ds1(33)))
+print(assemble(f * ds1(34)))
+print()
+print(assemble(f * dx1))
+print(assemble(f * dx1(35)))
+print(assemble(f * dx1(31)))
+print(assemble(f * dx1(32)))
+print(assemble(f * dx1(33)))
+print(assemble(f * dx1(34)))
+#plot(mesh)
+# plot(boundary_markers)
+# plt.show()

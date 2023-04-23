@@ -20,6 +20,6 @@ gmsh.model.geo.synchronize()
 
 gmsh.model.mesh.generate(2)
 
-gmsh.write("my_model.msh")
+gmsh.write("../my_model.msh")
 
 gmsh.finalize()

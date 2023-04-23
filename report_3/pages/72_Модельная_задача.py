@@ -10,13 +10,19 @@ $$
 \def \rot {\operatorname{rot}}
 
 \begin{aligned}
-&\frac {\partial u} {\partial t} = \div \grad u + f         \quad &x& \in \Omega \times (0, T],
+- &\div (\kappa(x) \grad u) = f,        \quad &x& \in \Omega
 \\[0.5 cm]
-&u = u_D                         \quad &x& \in \partial \Omega (0, T],
+&u = u_D,                               \quad &x& \in \partial \Omega
 \\[0.5 cm]
-&u = u_0 \quad &t& = 0,
+&\Omega_0 = [0,\ 1] \times [ 0,\ 0.5 ]
 \\[0.5 cm]
-&\Omega = [-2, \ 2] \times [-2, \ 2].
+&\Omega_1 = [0,\ 1] \times [ 0.5,\ 1 ]
+\\[0.5 cm]
+&\kappa(x) =
+\begin{cases}
+   \kappa_0, &x \in \Omega_0 \\
+   \kappa_1, &x \in \Omega_1
+\end{cases}
 \end{aligned}
 $$
 
@@ -24,13 +30,13 @@ $$
 
 $$
 \begin{aligned}
-&u_0(x_1, \ x_2) = e^{-a x_1^2 - a x_2^2},
+&f = -6
 \\[0.5 cm]
-&u_D = 0,
+&\kappa_0 = 1
 \\[0.5 cm]
-&f = 0,
+&\kappa_1 = 0.01
 \\[0.5 cm]
-&a = 5.
+&u_D = 0
 \end{aligned}
 $$
 """

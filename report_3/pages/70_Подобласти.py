@@ -3,7 +3,7 @@ from PIL import Image
 import os.path
 
 
-image = Image.open(os.path.join(os.path.dirname(__file__), "images", 'subdomains.png'))
+image = Image.open(os.path.join(os.path.dirname(os.path.dirname(__file__)), "images", 'subdomains.png'))
 
 
 r"""
