@@ -43,7 +43,7 @@ class xBoundary(SubDomain):
 
 
 xB = xBoundary()
-xB.mark(boundaries, 0)
+xB.mark(boundaries, 1)
 
 
 class yBoundary(SubDomain):
@@ -53,7 +53,7 @@ class yBoundary(SubDomain):
 
 
 yB = yBoundary()
-yB.mark(boundaries, 1)
+yB.mark(boundaries, 2)
 
 #ds = Measure("ds")[boundaries]
 
@@ -80,8 +80,8 @@ v_old = Function(V)
 r_old = Function(V)
 
 # Define boundary conditions
-bc1 = DirichletBC(V, Constant(0.0), boundaries, 0)
-bc2 = DirichletBC(V, Constant(0.0), boundaries, 1)
+bc1 = DirichletBC(V, Constant(0.0), boundaries, 1)
+bc2 = DirichletBC(V, Constant(0.0), boundaries, 2)
 
 # Initial condition
 u_old = project(Constant(0.0), V)
@@ -91,10 +91,10 @@ r_old = project(R0, V)
 # Set the options for the time discretization
 T = 1  # 5.
 t = 0.
-# dt = 0.01
-# dti = 1.0 / dt
-dti = 35
-dt = 1 / dti
+dt = 0.02
+dti = 1.0 / dt
+# dti = 35
+# dt = 1 / dti
 dti = Constant(dti)
 K = 1
 
@@ -136,6 +136,12 @@ L3 = rhs(F3)
 
 print("conservation: t %0.3f\t M %0.10f\t E %0.10f" % (t, sM, sE))
 
+# u, v, r = w.split(True)
+# plot(r)
+# plt.show()
+
+uk_ = Function(V)
+
 # Execute the time loop
 while t < T - dt / 2:
     t += dt
@@ -146,9 +152,10 @@ while t < T - dt / 2:
     vk.assign(v_old)
     for k in range(K):
         solve(a1 == L1, r1)
-        solve(a2 == L2, uk, bc1)
+        solve(a2 == L2, uk_, bc1)
         solve(a3 == L3, vk, bc2)
         rk.assign(r1)
+        uk.assign(uk_)
     r_old.assign(rk)
     u_old.assign(uk)
     v_old.assign(vk)

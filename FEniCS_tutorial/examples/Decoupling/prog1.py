@@ -43,7 +43,7 @@ class xBoundary(SubDomain):
 
 
 xB = xBoundary()
-xB.mark(boundaries, 0)
+xB.mark(boundaries, 1)
 
 
 class yBoundary(SubDomain):
@@ -53,7 +53,7 @@ class yBoundary(SubDomain):
 
 
 yB = yBoundary()
-yB.mark(boundaries, 1)
+yB.mark(boundaries, 2)
 
 #ds = Measure("ds")[boundaries]
 
@@ -77,8 +77,8 @@ w_old = Function(W)
 (u_old, v_old, r_old) = (w_old[0], w_old[1], w_old[2])
 
 # Define boundary conditions
-bcs = [DirichletBC(W.sub(0), Constant(0.0), boundaries, 0), \
-       DirichletBC(W.sub(1), Constant(0.0), boundaries, 1)]
+bcs = [DirichletBC(W.sub(0), Constant(0.0), boundaries, 1), \
+       DirichletBC(W.sub(1), Constant(0.0), boundaries, 2)]
 
 # Initial condition
 u1 = project(Constant(0.0), V)
@@ -94,10 +94,10 @@ w_old.assign(w)
 # Set the options for the time discretization
 T = 5 # 5.
 t = 0.
-#dt = 0.0025
-#dti = 1.0 / dt
-dti = 2
-dt = 1 / dti
+dt = 0.5
+dti = 1.0 / dt
+# dti = 2
+# dt = 1 / dti
 
 sm = r1 * dx()
 sM = assemble(sm)
@@ -137,6 +137,10 @@ F = dti * (r - r_old) * r_t * dx() + (r * u).dx(0) * r_t * dx() + (r * v).dx(1) 
 
 print("conservation: t %0.3f\t M %0.10f\t E %0.10f" % (t, sM, sE))
 
+# u, v, r = w.split(True)
+# plot(r)
+# plt.show()
+
 # Execute the time loop
 while t < T - dt / 2:
     t += dt
@@ -146,6 +150,8 @@ while t < T - dt / 2:
                                                   "relaxation_parameter": 1.0}})
     w_old.assign(w)
     u, v, r = w.split(True)
+    # plot(r)
+    # plt.show()
 
     sm = r * dx()
     sM = assemble(sm)

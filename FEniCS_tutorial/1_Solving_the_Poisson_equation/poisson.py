@@ -9,7 +9,7 @@ from scipy import integrate
 
 # Создание сетки и функционального пространства
 #mesh = UnitSquareMesh(8, 8, "right/left")
-mesh = RectangleMesh(Point(0, 0), Point(1, 1), 1, 1, "left")
+mesh = RectangleMesh(Point(0, 0), Point(1, 1), 8, 8, "left")
 
 V = FunctionSpace(mesh, "P", 1)
 
@@ -25,8 +25,10 @@ bc = DirichletBC(V, g, boundary)
 u = TrialFunction(V)
 v = TestFunction(V)
 f = Constant(-6.0)
-a = dot(grad(u), grad(v))*dx
+a = -div(grad(u)) * v * dx
 L = f*v*dx
+#-div(grad(u)) * v * dx
+#dot(grad(u), grad(v))*dx
 
 # Вычисление
 u = Function(V)
@@ -51,6 +53,7 @@ array_u = nodal_values_u.get_local()
 vertex_values_g = g.compute_vertex_values(mesh)
 vertex_values_u = u.compute_vertex_values(mesh)
 error_max = np.max(np.abs(vertex_values_g - vertex_values_u))
+print(error_max)
 
 
-#plt.show()
+plt.show()
