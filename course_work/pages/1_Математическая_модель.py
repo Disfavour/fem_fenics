@@ -11,54 +11,52 @@ $$
 \def \div {\operatorname{div}}
 \def \rot {\operatorname{rot}}
 
-\begin{equation}
+\begin{aligned}
 	\frac{\partial \varrho}{\partial t} + \div(\varrho \bm u) = 0 ,
 	\quad x \in \Omega ,
 	\quad 0 < t \leq T
-\end{equation}
+\end{aligned}
 $$
 
-где $\varrho(x, t) > 0$ - плотность, а $\bm u (x, t)$ - скорость.
+где $\varrho(x, t) > 0$ - плотность, а $\bm u (x, t)$ - скорость
 
-Уравнение движения в консервативном виде, когда
+Уравнение движения в консервативном виде
 
 $$
 \def \grad {\operatorname{grad}}
 \def \div {\operatorname{div}}
 \def \rot {\operatorname{rot}}
 
-\begin{equation}
+\begin{aligned}
 	\frac{\partial }{\partial t} (\varrho \bm u) + \div(\varrho \bm u \otimes \bm u) + \grad p = 0 , 
 	\quad x \in \Omega ,
 	\quad 0 < t \leq T
-\end{equation}
+\end{aligned}
 $$
 
-где $p(x, t)$ - давление.
+где $p(x, t)$ - давление
 
-Жидкость предполагается баротропной, так что предполагается
-известной зависимость давления от плотности: $p = p(\varrho)$, ${\displaystyle \frac{d p}{d \varrho} > 0}$.
+Жидкость предполагается баротропной, так что предполагается известной зависимость давления от плотности:
+$p = p(\varrho)$, ${\displaystyle \frac{d p}{d \varrho} > 0}$
 
-Границы считаются твердыми. В силу этого
-имеем граничное условие непротекания
+Границы считаются твердыми, поэтому имеем граничное условие непротекания
 
 $$
-\begin{equation}
+\begin{aligned}
 	(\bm u \cdot \bm n) = 0, 
 	\quad x \in \partial \Omega 
-\end{equation}
+\end{aligned}
 $$
 
-Задаются также начальные условия для плотности и скорости:
+Задаются также начальные условия для плотности и скорости
 
 $$
-\begin{equation}
+\begin{aligned}
 	\varrho(x, 0) = \varrho^0(x) ,
 	\quad \bm u (x, 0) = \bm u^0(x) ,
 	\quad x \in \Omega
-\end{equation}
+\end{aligned}
 $$
 
-Начально-краевая задача (1)-(4) описывает нестационарные течения 
-идеальной баротропной жидкости.
+Начально-краевая задача описывает нестационарные течения идеальной баротропной жидкости
 """
