@@ -3,16 +3,16 @@ from fenics import *
 
 set_log_level(LogLevel.WARNING)
 
-vtkfile = File("vis_r/solution.pvd")
+vtkfile = File("vis_r/fake2_solution.pvd")
 t = 0
 T = 5
-tau_ = 0.005
+tau_ = 0.01
 time_steps = int(T / tau_)
 tau = Constant(tau_)
 
 tol = 1e-14
 domain_size = 5
-mesh_size = 200
+mesh_size = 100
 
 a = Constant(1)
 gam = Constant(1.4)
@@ -32,8 +32,8 @@ subdomain_y = CompiledSubDomain("on_boundary && (near(x[1], -size) || near(x[1],
 subdomain_x.mark(boundaries, 1)
 subdomain_y.mark(boundaries, 2)
 
-bcs = [DirichletBC(W.sub(0).sub(0), Constant(0), boundaries, 1),
-       DirichletBC(W.sub(0).sub(1), Constant(0), boundaries, 2)]
+bcs = [DirichletBC(W.sub(0).sub(0), Constant(0), boundaries, 2),
+       DirichletBC(W.sub(0).sub(1), Constant(0), boundaries, 1)]
 
 ut, rt = TestFunctions(W)
 w = project(Expression(("0", "0", "1 + alf*exp(-bet*(x[0]*x[0]+x[1]*x[1]))"), alf=alf, bet=bet, degree=1), W)

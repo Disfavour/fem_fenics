@@ -43,10 +43,10 @@ def nonlinear(degree=1, mesh_size=100, tau=0.005, T=5, t_fig4=(1, 2, 3, 4, 5)):
     u, r = split(w)
     un, rn = split(wn)
 
-    F = (r-rn)/tau_ * rt * dx\
-        - dot(r*u, grad(rt)) * dx\
-        + dot((r*u-rn*un)/tau_, ut) * dx\
-        - inner(outer(r*u, u), nabla_grad(ut)) * dx\
+    F = (r-rn)/tau_ * rt * dx \
+        - dot(r*u, grad(rt)) * dx \
+        + dot((r*u-rn*un)/tau_, ut) * dx \
+        - inner(outer(r*u, u), nabla_grad(ut)) * dx \
         + dot(grad(a * r**gam), ut) * dx
 
     m_eq = r * dx
