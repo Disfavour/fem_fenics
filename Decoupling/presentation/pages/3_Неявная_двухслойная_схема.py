@@ -5,35 +5,22 @@ r"""
 # Неявная двухслойная схема
 
 Пусть $\tau$ - шаг равномерной сетки во времени, такой, что
-$\phi_n = \phi(t_n);\ t_n = n \tau;\ n = 0, 1, . . ., N; N \tau = T$
+
+$\phi_n = \phi(t_n);\quad t_n = n \tau;\quad n = 0, 1, . . ., N;\quad N \tau = T$
 
 Решение на новом слое определяется из уравнений
 
-$$
-\def \grad {\operatorname{grad}}
-\def \div {\operatorname{div}}
-\def \rot {\operatorname{rot}}
+$\begin{aligned}
+\frac {\varrho_{n+1} - \varrho_{n}} {\tau} + \operatorname{div}(\varrho_{n+1} \bm u_{n+1}) = 0
+\end{aligned}$
 
-\begin{aligned}
-	\frac{\varrho_{n+1} - \varrho_{n} }{\tau} + \div(\varrho_{n+1} \bm u_{n+1})  = 0
-\end{aligned}
-$$
+$\begin{aligned}
+\frac {\varrho_{n+1} \bm u_{n+1} - \varrho_{n} \bm u_{n}  }{\tau } + \operatorname{div}(\varrho_{n+1} \bm u_{n+1} \otimes \bm u_{n+1}) + \operatorname{grad} p(\varrho_{n+1}) = 0
+\end{aligned}$
+"""
 
-$$
-\def \grad {\operatorname{grad}}
-\def \div {\operatorname{div}}
-\def \rot {\operatorname{rot}}
-
-\begin{aligned}
-	\begin{split}
-		&\frac{\varrho_{n+1} \bm u_{n+1} - \varrho_{n} \bm u_{n}  }{\tau } + 
-		\div(\varrho_{n+1} \bm u_{n+1} \otimes \bm u_{n+1}) + \grad p(\varrho_{n+1}) = 0
-	\end{split}
-\end{aligned}
-$$
-
-## Вариационная постановка
-
+with st.expander("Вариационная постановка"):
+    r"""
 Умножаем каждое уравнение на тестовую функцию, интегрируем по области и суммируем уравнения
 
 $$
