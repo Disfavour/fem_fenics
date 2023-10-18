@@ -13,7 +13,7 @@ def fig11(fnamet1, fnamet2, fnamet3, resname):
     # arr_t2 = np.load(fnamet2)
     # arr_t3 = np.load(fnamet3)
 
-    plt.figure(figsize=(6.4, 3.6), tight_layout=True)
+    plt.figure(figsize=(6.4, 3.6), dpi=300, tight_layout=True)
 
     if fnamet1 is not None:
         arr_t1 = np.load(fnamet1)
@@ -26,15 +26,16 @@ def fig11(fnamet1, fnamet2, fnamet3, resname):
     if fnamet3 is not None:
         arr_t3 = np.load(fnamet3)
         plt.plot(arr_t3[0], arr_t3[2], '-g', lw=0.9, label=r"$\tau=0.0025$")
-        plt.xlim(arr_t3[0][0], arr_t3[0][-1])
+        #plt.xlim(arr_t3[0][0], arr_t3[0][-1])
 
-    plt.gca().yaxis.set_major_formatter(mtick.FormatStrFormatter('%.3f'))
+    if arr_t1[2].max() - arr_t1[2].min() < 0.05:
+        plt.gca().yaxis.set_major_formatter(mtick.FormatStrFormatter('%.4f'))
 
     plt.legend()
     plt.grid()
-    #plt.xlim(arr_t1[0][0], arr_t1[0][-1])
-    plt.xlabel(r'$x_1$')
-    plt.ylabel(r'$\varrho$')
+    plt.xlim(arr_t1[0][0], arr_t1[0][-1])
+    plt.xlabel(r"$t$")
+    plt.ylabel(r"$E$")
 
     for i in ['pdf', 'png']:
         plt.savefig(os.path.join(plots, i, 'fig11_' + resname + '.' + i))
@@ -48,11 +49,12 @@ if __name__ == '__main__':
                 fnames.append(os.path.join(data, f'{prog}_tau{tau}_ms{ms}.npy'))
             fig11(*fnames, f'{prog}_ms{ms}')
 
-    ms = 100
-    for s in [0, 0.25, 0.5, 0.75, 1]:
-        fnames = []
-        for tau in ('0.01', '0.005', '0.0025'):
-            f = os.path.join(data, f'w_s{s}_tau{tau}_ms{ms}.npy')
-            f = f if os.path.isfile(f) else None
-            fnames.append(f)
-        fig11(*fnames, f'w_s{s}_ms{ms}')
+    for ms in (100, 200):
+        for s in [0, 0.25, 0.5, 0.75, 1]:
+            fnames = []
+            for tau in ('0.01', '0.005', '0.0025'):
+                f = os.path.join(data, f'w_s{s}_tau{tau}_ms{ms}.npy')
+                f = f if os.path.isfile(f) else None
+                fnames.append(f)
+            if all(fnames):
+                fig11(*fnames, f'w_s{s}_ms{ms}')

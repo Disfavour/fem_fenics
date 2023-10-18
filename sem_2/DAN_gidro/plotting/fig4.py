@@ -8,7 +8,7 @@ data = os.path.join(base_dir, 'data')
 
 
 def fig4(fnamet1, fnamet2, fnamet3, resname):
-    plt.figure(figsize=(6.4, 3.6), tight_layout=True)
+    plt.figure(figsize=(6.4, 3.6), dpi=300, tight_layout=True)
 
     lws = [1.5, 1.2, 0.9]
 
@@ -49,11 +49,12 @@ if __name__ == '__main__':
                 fnames.append(os.path.join(data, f'{prog}_tau{tau}_ms{ms}.npy'))
             fig4(*fnames, f'{prog}_ms{ms}')
 
-    ms = 100
-    for s in [0, 0.25, 0.5, 0.75, 1]:
-        fnames = []
-        for tau in ('0.01', '0.005', '0.0025'):
-            f = os.path.join(data, f'w_s{s}_tau{tau}_ms{ms}.npy')
-            f = f if os.path.isfile(f) else None
-            fnames.append(f)
-        fig4(*fnames, f'w_s{s}_ms{ms}')
+    for ms in (100, 200):
+        for s in [0, 0.25, 0.5, 0.75, 1]:
+            fnames = []
+            for tau in ('0.01', '0.005', '0.0025'):
+                f = os.path.join(data, f'w_s{s}_tau{tau}_ms{ms}.npy')
+                f = f if os.path.isfile(f) else None
+                fnames.append(f)
+            if all(fnames):
+                fig4(*fnames, f'w_s{s}_ms{ms}')

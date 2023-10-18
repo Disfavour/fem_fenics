@@ -52,8 +52,8 @@ def nonsymmetric(tau=0.01, mesh_size=100, vtkfile=None, verbose=False):
     subdomain_x.mark(boundaries, 1)
     subdomain_y.mark(boundaries, 2)
 
-    bcs = [DirichletBC(W.sub(0).sub(0), Constant(0), boundaries, 1),
-           DirichletBC(W.sub(0).sub(1), Constant(0), boundaries, 2)]
+    bcs = [DirichletBC(W.sub(0).sub(0), Constant(0), boundaries, 2),
+           DirichletBC(W.sub(0).sub(1), Constant(0), boundaries, 1)]
 
     ut, rt = TestFunctions(W)
     w = Function(W)
