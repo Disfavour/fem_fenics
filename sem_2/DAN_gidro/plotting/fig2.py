@@ -33,7 +33,7 @@ if __name__ == '__main__':
             for ms in (100, 200):
                 fig2(os.path.join(data, f'{prog}_tau{tau}_ms{ms}.npy'), f'{prog}_tau{tau}_ms{ms}')
 
-    for ms in (100, 200):
+    for ms in (100, 200, 400):
         for tau in ('0.01', '0.005', '0.0025'):
             for s in [0, 0.25, 0.5, 0.75, 1]:
                 if os.path.isfile(os.path.join(data, f'w_s{s}_tau{tau}_ms{ms}.npy')):

@@ -49,7 +49,7 @@ if __name__ == '__main__':
                 fnames.append(os.path.join(data, f'{prog}_tau{tau}_ms{ms}.npy'))
             fig11(*fnames, f'{prog}_ms{ms}')
 
-    for ms in (100, 200):
+    for ms in (100, 200, 400):
         for s in [0, 0.25, 0.5, 0.75, 1]:
             fnames = []
             for tau in ('0.01', '0.005', '0.0025'):
