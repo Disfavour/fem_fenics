@@ -1,5 +1,6 @@
 from fenics import *
 import numpy as np
+from ufl_legacy import nabla_div
 
 
 def decoupled(K=1, degree=1, mesh_size=100, tau=0.005, T=5, t_fig4=(1, 2, 3, 4, 5)):
@@ -38,19 +39,26 @@ def decoupled(K=1, degree=1, mesh_size=100, tau=0.005, T=5, t_fig4=(1, 2, 3, 4, 
            DirichletBC(V.sub(1), Constant(0), boundaries, 2)]
 
     ut, rt = TestFunction(V), TestFunction(S)
-    u_, r_ = TrialFunction(V), TrialFunction(S)
-    u, r = Function(V), Function(S)
+    # u_, r_ = TrialFunction(V), TrialFunction(S)
+    # u, r = Function(V), Function(S)
+    u_, r = TrialFunction(V), TrialFunction(S)
+    u = Function(V)
     un, rn = Function(V), Function(S)
-    uk, rk = Function(V), Function(S)
+    #uk, rk = Function(V), Function(S)
 
-    F1 = (r_ - rn) / tau_ * rt * dx \
-         - dot(r_ * uk, grad(rt)) * dx
+    F1 = (r - rn) / tau_ * rt * dx \
+         - dot(r * u, grad(rt)) * dx
 
     a1, L1 = lhs(F1), rhs(F1)
 
+    r = Function(S)
+
     F2 = dot((r * u_ - rn * un) / tau_, ut) * dx \
-         - inner(outer(r * uk, u_), nabla_grad(ut)) * dx \
+         - inner(r*outer(u_, u), grad(ut)) * dx \
          + dot(grad(a * r ** gam), ut) * dx
+
+    # - inner(r*outer(uk, u_), nabla_grad(ut)) * dx \
+    # + dot(nabla_div(r*outer(uk, u_)), ut) * dx \
 
     a2, L2 = lhs(F2), rhs(F2)
 
@@ -71,14 +79,14 @@ def decoupled(K=1, degree=1, mesh_size=100, tau=0.005, T=5, t_fig4=(1, 2, 3, 4, 
     rn.assign(r)
 
     for t in time_steps:
-        uk.assign(un)
-        rk.assign(rn)
+        #uk.assign(un)
+        #rk.assign(rn)
 
         for k in range(K):
             solve(a1 == L1, r)
             solve(a2 == L2, u, bcs)
-            uk.assign(u)
-            rk.assign(r)
+            #uk.assign(u)
+            #rk.assign(r)
 
         m, E = assemble(m_eq), assemble(E_eq)
         print(f"conservation: t {t:.3f}\t M {m:.10f}\t E {E:.10f}")
@@ -99,8 +107,8 @@ def decoupled(K=1, degree=1, mesh_size=100, tau=0.005, T=5, t_fig4=(1, 2, 3, 4, 
     ts = np.array(ts)
     Es = np.array(Es)
 
-    np.save(f"data/dec_K{K}_d{degree}_ms{mesh_size}_tau{tau}.npy", np.array((ts, Es, xs, *rs)).T)
+    #np.save(f"data/dec_K{K}_d{degree}_ms{mesh_size}_tau{tau}.npy", np.array((ts, Es, xs, *rs)).T)
 
 
 if __name__ == "__main__":
-    pass
+    decoupled(K=2, degree=1, mesh_size=10, tau=0.1)

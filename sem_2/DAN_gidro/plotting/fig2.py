@@ -24,18 +24,18 @@ def fig2(fname, resname):
     plt.ylabel(r'$\varrho$')
 
     for i in ['pdf', 'png']:
-        plt.savefig(os.path.join(plots, i, 'fig2_' + resname + '.' + i))
+        plt.savefig(os.path.join(plots, i, 'fig2_' + resname + '.' + i), transparent=True)
 
 
 if __name__ == '__main__':
-    for prog in ('sym', 'nsym'):
-        for tau in ('0.01', '0.005', '0.0025'):
-            for ms in (100, 200):
-                fig2(os.path.join(data, f'{prog}_tau{tau}_ms{ms}.npy'), f'{prog}_tau{tau}_ms{ms}')
+    # for prog in ('sym', 'nsym'):
+    #     for tau in ('0.01', '0.005', '0.0025'):
+    #         for ms in (100, 200):
+    #             fig2(os.path.join(data, f'{prog}_tau{tau}_ms{ms}.npy'), f'{prog}_tau{tau}_ms{ms}')
 
     for ms in (100, 200, 400):
         for tau in ('0.01', '0.005', '0.0025'):
-            for s in [0, 0.25, 0.5, 0.75, 1]:
+            for s in [0, 0.25, 0.5, 0.75, 1, 1.5, 2]:
                 if os.path.isfile(os.path.join(data, f'w_s{s}_tau{tau}_ms{ms}.npy')):
                     fig2(os.path.join(data, f'w_s{s}_tau{tau}_ms{ms}.npy'), f'w_s{s}_tau{tau}_ms{ms}')
 

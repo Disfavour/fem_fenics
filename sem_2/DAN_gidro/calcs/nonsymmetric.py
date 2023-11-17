@@ -52,8 +52,8 @@ def nonsymmetric(tau=0.01, mesh_size=100, vtkfile=None, verbose=False):
     subdomain_x.mark(boundaries, 1)
     subdomain_y.mark(boundaries, 2)
 
-    bcs = [DirichletBC(W.sub(0).sub(0), Constant(0), boundaries, 2),
-           DirichletBC(W.sub(0).sub(1), Constant(0), boundaries, 1)]
+    bcs = [DirichletBC(W.sub(0).sub(0), Constant(0), boundaries, 1),
+           DirichletBC(W.sub(0).sub(1), Constant(0), boundaries, 2)]
 
     ut, rt = TestFunctions(W)
     w = Function(W)
@@ -64,8 +64,11 @@ def nonsymmetric(tau=0.01, mesh_size=100, vtkfile=None, verbose=False):
     F = (r-rn)/tau_ * rt * dx \
         - dot(r*u, grad(rt)) * dx \
         + dot((r*u-rn*un)/tau_, ut) * dx \
-        - inner(outer(r*u, u), nabla_grad(ut)) * dx \
+        - inner(r*outer(u, u), nabla_grad(ut)) * dx \
         + dot(grad(a * r**gam), ut) * dx
+    
+    #- inner(outer(r*u, u), nabla_grad(ut)) * dx \
+    # + dot(div(r*outer(u, u)), ut) * dx \
 
     m_eq = r * dx
     E_eq = (r*dot(u, u)/2 + a*r**gam/(gam-1)) * dx
@@ -147,5 +150,5 @@ def nonsymmetric(tau=0.01, mesh_size=100, vtkfile=None, verbose=False):
 
 
 if __name__ == '__main__':
-    nonsymmetric(verbose=True)
+    nonsymmetric(tau=0.1, mesh_size=10, verbose=True)
     #nonsymmetric(tau=0.01, vtkfile=File(join(paraview, 'nsym_t1' + '.pvd')), verbose=True)

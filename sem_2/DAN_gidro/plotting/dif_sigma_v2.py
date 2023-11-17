@@ -14,7 +14,7 @@ def fig_dif_sigma(fnames, resname):
     for i in fnames:
         a.append(np.load(i))
 
-    plt.figure(figsize=(6.4, 3.6), tight_layout=True)
+    plt.figure(figsize=(6.4, 3.6), dpi=300, tight_layout=True)
 
     lws = [1.5, 1.0, 0.5]
     lws = [1.5, 1.2, 0.9]
@@ -52,7 +52,7 @@ def fig_dif_sigma(fnames, resname):
     plt.ylabel(r"$E$")
 
     for i in ['pdf', 'png']:
-        plt.savefig(os.path.join(plots, i, 'fig_dif_sigma_v2_' + resname + '.' + i))
+        plt.savefig(os.path.join(plots, i, 'fig_dif_sigma_v2_' + resname + '.' + i), transparent=True)
 
 
 if __name__ == '__main__':

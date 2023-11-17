@@ -38,19 +38,19 @@ def fig4(fnamet1, fnamet2, fnamet3, resname):
     plt.ylabel(r'$\varrho$')
 
     for i in ['pdf', 'png']:
-        plt.savefig(os.path.join(plots, i, 'fig4_' + resname + '.' + i))
+        plt.savefig(os.path.join(plots, i, 'fig4_' + resname + '.' + i), transparent=True)
 
 
 if __name__ == '__main__':
-    for prog in ('sym', 'nsym'):
-        for ms in (100, 200):
-            fnames = []
-            for tau in ('0.01', '0.005', '0.0025'):
-                fnames.append(os.path.join(data, f'{prog}_tau{tau}_ms{ms}.npy'))
-            fig4(*fnames, f'{prog}_ms{ms}')
+    # for prog in ('sym', 'nsym'):
+    #     for ms in (100, 200):
+    #         fnames = []
+    #         for tau in ('0.01', '0.005', '0.0025'):
+    #             fnames.append(os.path.join(data, f'{prog}_tau{tau}_ms{ms}.npy'))
+    #         fig4(*fnames, f'{prog}_ms{ms}')
 
-    for ms in (100, 200, 400):
-        for s in [0, 0.25, 0.5, 0.75, 1]:
+    for ms in (100, 200):
+        for s in [0, 0.25, 0.5, 0.75, 1, 1.5, 2]:
             fnames = []
             for tau in ('0.01', '0.005', '0.0025'):
                 f = os.path.join(data, f'w_s{s}_tau{tau}_ms{ms}.npy')
@@ -58,3 +58,16 @@ if __name__ == '__main__':
                 fnames.append(f)
             if all(fnames):
                 fig4(*fnames, f'w_s{s}_ms{ms}')
+
+    # w_s1_tau0.00125_ms400
+
+    s = 1
+    ms = 400
+
+    fnames = []
+    for tau in ('0.0025', '0.00125', '0.000625'):
+        f = os.path.join(data, f'w_s{s}_tau{tau}_ms{ms}.npy')
+        f = f if os.path.isfile(f) else None
+        fnames.append(f)
+    if all(fnames):
+        fig4(*fnames, f'small_tau_w_s{s}_ms{ms}')

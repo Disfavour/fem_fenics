@@ -113,8 +113,8 @@ def jacobi(K=1, degree=1, mesh_size=100, tau=0.005, T=5, t_fig4=(1, 2, 3, 4, 5))
     ts = np.array(ts)
     Es = np.array(Es)
 
-    np.save(f"data/jac_K{K}_d{degree}_ms{mesh_size}_tau{tau}.npy", np.array((ts, Es, xs, *rs)).T)
+    #np.save(f"data/jac_K{K}_d{degree}_ms{mesh_size}_tau{tau}.npy", np.array((ts, Es, xs, *rs)).T)
 
 
 if __name__ == "__main__":
-    pass
+    jacobi(K=2, degree=1, mesh_size=10, tau=0.1, T=5, t_fig4=(1, 2, 3, 4, 5))
