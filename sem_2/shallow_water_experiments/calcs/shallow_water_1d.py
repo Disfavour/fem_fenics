@@ -17,6 +17,8 @@ def shallow_water_1d(s, tau, mesh_size, T, time_moments, critical_time, degree=1
     ms = []
     Es = []
 
+    delta = [0]
+
     hl, hr = 10, 1
     domain_size = 5
     h1 = 3.9618
@@ -50,14 +52,11 @@ def shallow_water_1d(s, tau, mesh_size, T, time_moments, critical_time, degree=1
                           'x[0] < D1*t ? 0  : (x[0] < D2*t ? 1./3 * (2*sqrt(g*hl) + 2*x[0]/t)        : (x[0] < D3*t ? u1 : 0 ))'),
                         g=g, hl=hl, hr=hr, h1=h1, u1=u1, D1=D1, D2=D2, D3=D3, t=t, degree=degree)
 
-    def hs():
-        return s*h + (1-s)*hn
+    hs = s*h + (1-s)*hn
+    us = s*u + (1-s)*un
 
-    def us():
-        return s*u + (1-s)*un
-
-    F = ((h-hn)/tau + (hs()*us()).dx(0)) * ht*dx \
-        + ((h*u-hn*un)/tau + (hs()*us()*us()).dx(0) + g/2*(hs()*hs()).dx(0)) * ut*dx
+    F = ((h-hn)/tau + (hs*us).dx(0)) * ht*dx \
+        + ((h*u-hn*un)/tau + (hs*us*us).dx(0) + g/2*(hs*hs).dx(0)) * ut*dx
     
     m_eq = h * dx
     E_eq = 0.5*(h*u*u + g*h*h) * dx
@@ -65,6 +64,8 @@ def shallow_water_1d(s, tau, mesh_size, T, time_moments, critical_time, degree=1
     def collect_data():
         m, E = map(assemble, (m_eq, E_eq))
         print(f'Time {t:>7.5f} m {m:>7.5f} E {E:>7.5f}')
+
+        delta.append(delta[-1] + tau*assemble(-0.5*((h - hn)/tau*us*us*dx + (hs*us).dx(0)*us*us*dx)))
 
         ms.append(m)
         Es.append(E)
@@ -103,9 +104,9 @@ def shallow_water_1d(s, tau, mesh_size, T, time_moments, critical_time, degree=1
 
         wn.assign(w)
 
-    return map(np.array, (x, h_numerical_list, u_numerical_list, h_exact_list, u_exact_list, t_L2, h_L2, u_L2, time_steps, ms, Es))
+    return map(np.array, (x, h_numerical_list, u_numerical_list, h_exact_list, u_exact_list, t_L2, h_L2, u_L2, time_steps, ms, Es, delta))
 
 
 if __name__ == '__main__':
-    #shallow_water_1d(1, 0.01, 100, 1, [], 0)
+    shallow_water_1d(1, 0.01, 100, 1, [], 0)
     pass

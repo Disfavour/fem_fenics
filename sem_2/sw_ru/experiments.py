@@ -70,6 +70,11 @@ def make_plots(ms, tau, d1, d2, sigma):
 
     E_compare(t_r_u[0], t_r_u[1], t_r_ru[1], t_s_u[1], t_s_su[1], 'r_u', 'r_ru', 's_u', 's_su', join(images, f'E_compare_ms{ms}_tau{tau}_d{d1}{d2}_sigma{sigma}.png'))
 
+    E(t_r_u[0], t_r_u[1], join(images, f'E_r_u_ms{ms}_tau{tau}_d{d1}{d2}_sigma{sigma}.png'))
+    E(t_r_ru[0], t_r_ru[1], join(images, f'E_r_ru_ms{ms}_tau{tau}_d{d1}{d2}_sigma{sigma}.png'))
+    E(t_s_u[0], t_s_u[1], join(images, f'E_s_u_ms{ms}_tau{tau}_d{d1}{d2}_sigma{sigma}.png'))
+    E(t_s_su[0], t_s_su[1], join(images, f'E_s_su_ms{ms}_tau{tau}_d{d1}{d2}_sigma{sigma}.png'))
+
     density_at_different_moments(x_r_u[0], x_r_u[1], x_r_u[2], x_r_u[3], join(images, f'density_r_u_ms{ms}_tau{tau}_d{d1}{d2}_sigma{sigma}.png'))
     density_at_different_moments(x_r_ru[0], x_r_ru[1], x_r_ru[2], x_r_ru[3], join(images, f'density_r_ru_ms{ms}_tau{tau}_d{d1}{d2}_sigma{sigma}.png'))
     density_at_different_moments(x_s_u[0], x_s_u[1], x_s_u[2], x_s_u[3], join(images, f'density_s_u_ms{ms}_tau{tau}_d{d1}{d2}_sigma{sigma}.png'))
@@ -120,4 +125,13 @@ def special():
 
 if __name__ == '__main__':
     #run()
-    special()
+    #special()
+    mesh_sizes = (100,)
+    taus = (0.01,)
+    degree1 = (2, 1)
+    degree2 = (2, 1)
+    sigmas = (0.5, 1)
+
+    params = tuple((ms, tau, d1, d2, sigma) for ms in mesh_sizes for d2 in degree2 for d1 in degree1 for tau in taus for sigma in sigmas)
+    for i in params:
+        make_plots(*i)

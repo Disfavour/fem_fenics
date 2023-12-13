@@ -28,8 +28,7 @@ def h(x, h_numerical, h_exact, dir, filename):
     
     plt.ylabel(r'$h$')
 
-    for i in ['pdf', 'png']:
-        plt.savefig(join(dir, i, f'{filename}.{i}'))
+    plt.savefig(join(dir, f'{filename}.png'))
     
     plt.close()
 
@@ -39,8 +38,7 @@ def u(x, u_numerical, u_exact, dir, filename):
 
     plt.ylabel(r'$u$')
 
-    for i in ['pdf', 'png']:
-        plt.savefig(join(dir, i, f'{filename}.{i}'))
+    plt.savefig(join(dir, f'{filename}.png'))
     
     plt.close()
 
@@ -74,8 +72,7 @@ def u_at_different_moments(x, u_numerical, u_exact, time_moments, dir, filename)
 
     plt.ylabel(r'$u$')
 
-    for i in ['pdf', 'png']:
-        plt.savefig(join(dir, i, f'{filename}.{i}'))
+    plt.savefig(join(dir, f'{filename}.png'))
     
     plt.close()
 
@@ -95,8 +92,7 @@ def h_L2(t, h, dir, filename):
 
     plt.ylabel(r'$|| h_{exact} - h_{numerical} ||_2$')
 
-    for i in ['pdf', 'png']:
-        plt.savefig(join(dir, i, f'{filename}.{i}'))
+    plt.savefig(join(dir, f'{filename}.png'))
     
     plt.close()
 
@@ -124,8 +120,55 @@ def E_different_s(t, Es, sigmas, dir, filename):
     plt.xlabel(r'$t$')
     plt.ylabel(r'$E$')
 
-    for i in ['pdf', 'png']:
-        plt.savefig(join(dir, i, f'{filename}.{i}'))
+    plt.savefig(join(dir, f'{filename}.png'))
+    
+    plt.close()
+
+def E_different_tau(ts, Es, taus, dir, filename):
+    plt.figure(figsize=(6.4, 3.6), dpi=dpi, tight_layout=True)
+    
+    for i, (tau, t, E) in enumerate(zip(taus, ts, Es)):
+        plt.plot(t, E, c[i], label=fr'$\tau={tau}$')
+
+    plt.legend()
+    plt.grid()
+    plt.xlim(t[0], t[-1])
+    plt.xlabel(r'$t$')
+    plt.ylabel(r'$E$')
+
+    plt.savefig(join(dir, f'{filename}.png'))
+    
+    plt.close()
+
+def delta_different_s(t, deltas, sigmas, dir, filename):
+    plt.figure(figsize=(6.4, 3.6), dpi=dpi, tight_layout=True)
+    
+    for i, (s, delta) in enumerate(zip(sigmas, deltas)):
+        plt.plot(t, delta[1:], c[i], label=fr'$\sigma={s}$')
+
+    plt.legend()
+    plt.grid()
+    plt.xlim(t[0], t[-1])
+    #plt.xlabel(r'$t$')
+    #plt.ylabel(r'$E$')
+
+    plt.savefig(join(dir, f'{filename}.png'))
+    
+    plt.close()
+
+def delta_different_tau(ts, deltas, taus, dir, filename):
+    plt.figure(figsize=(6.4, 3.6), dpi=dpi, tight_layout=True)
+    
+    for i, (tau, t, delta) in enumerate(zip(taus, ts, deltas)):
+        plt.plot(t, delta[1:], c[i], label=fr'$\tau={tau}$')
+
+    plt.legend()
+    plt.grid()
+    plt.xlim(t[0], t[-1])
+    #plt.xlabel(r'$t$')
+    #plt.ylabel(r'$E$')
+
+    plt.savefig(join(dir, f'{filename}.png'))
     
     plt.close()
 

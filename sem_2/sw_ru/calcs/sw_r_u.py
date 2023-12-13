@@ -4,7 +4,9 @@ import numpy as np
 set_log_level(LogLevel.WARNING)
 
 
-def sw_r_u(ms=100, tau=0.01, degree_r=1, degree_u=1, sigma=1):
+def sw_r_u(ms=100, tau=0.01, degree_r=1, degree_u=1, sigma=1, vtkfname=None):
+    vtkfile = File(vtkfname) if vtkfname is not None else None
+
     size = 5
     alf = 2
     bet = 20
@@ -39,15 +41,12 @@ def sw_r_u(ms=100, tau=0.01, degree_r=1, degree_u=1, sigma=1):
     rt, ut = TestFunctions(Q)
     r, u = split(q)
     rn, un = split(qn)
-    
-    def rs():
-        return sigma*r + (1-sigma)*rn
-    
-    def us():
-        return sigma*u + (1-sigma)*un
 
-    F = (r - rn)/tau*rt*dx + div(rs()*us())*rt*dx \
-        + dot((r*u - rn*un)/tau, ut)*dx + dot(div(rs()*outer(us(), us())), ut)*dx + dot(grad(a*rs()*rs()), ut)*dx
+    rs = sigma*r + (1-sigma)*rn
+    us = sigma*u + (1-sigma)*un
+
+    F = (r - rn)/tau*rt*dx + div(rs*us)*rt*dx \
+        + dot((r*u - rn*un)/tau, ut)*dx + dot(div(rs*outer(us, us)), ut)*dx + dot(grad(a*rs*rs), ut)*dx
 
     m_eq = r * dx
     E_eq = (0.5*r*dot(u, u) + a*r*r) * dx
@@ -66,9 +65,13 @@ def sw_r_u(ms=100, tau=0.01, degree_r=1, degree_u=1, sigma=1):
             if np.isclose(t, moments).any():
                 r_.append(rv[idxs])
 
-            print(f'Time {t:>7.5f} m {m:>7.8f} E {E:>7.8f}')
+            if vtkfile is not None:
+                vtkfile << (q, t)
 
-    q.assign(project(Expression(('1 + alf*exp(-bet*(x[0]*x[0]+x[1]*x[1]))', '0', '0'), alf=alf, bet=bet, degree=max(degree_r, degree_u)), Q))
+            print(f'Time {t:>7.5f} m {m:>7.8f} E {E:>7.8f}')
+            print(r_min[-1])
+
+    q.assign(project(Expression(('0.15 + alf*exp(-bet*(x[0]*x[0]+x[1]*x[1]))', '0', '0'), alf=alf, bet=bet, degree=max(degree_r, degree_u)), Q))
 
     collect_data()
 
@@ -85,5 +88,9 @@ def sw_r_u(ms=100, tau=0.01, degree_r=1, degree_u=1, sigma=1):
 
 
 if __name__ == '__main__':
-    #sw_r_u()
+    from os.path import dirname, join
+    base_dir = dirname(dirname(__file__))
+    paraview = join(base_dir, 'paraview')
+    vtkfname=join(paraview, 'dry_bottom_s0.5_r_u.pvd')
+    sw_r_u(sigma=0.5, vtkfname=vtkfname)
     pass

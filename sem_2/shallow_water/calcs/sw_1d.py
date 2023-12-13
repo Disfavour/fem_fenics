@@ -1,20 +1,16 @@
 from fenics import *
 import numpy as np
 from scipy.constants import g
-from os.path import dirname, join
 
-
-base_dir = dirname(dirname(__file__))
-paraview = join(base_dir, 'paraview')
 
 set_log_level(LogLevel.WARNING)
 
 
-def shallow_water_1d(s=1, tau=0.01, mesh_size=100, T=1, degree=1):
-    hl, hr = 10, 1
-    domain_size = 5
+def shallow_water_1d(s=1, tau=0.01, mesh_size=100, T=1, degree=1, vtkfname=None):
+    vtkfile = File(vtkfname) if vtkfname is not None else None
 
-    vtkfile = File(join(paraview, 'numerical.pvd'))
+    hl, hr = 10, 0.7
+    domain_size = 5
 
     t = 0
     ts = np.linspace(t, T, round(T / tau) + 1)
@@ -55,9 +51,11 @@ def shallow_water_1d(s=1, tau=0.01, mesh_size=100, T=1, degree=1):
     def collect_data():
         m, E = map(assemble, (m_eq, E_eq))
 
-        print(f'Time {t:>7.5f} m {m:>7.8f} E {E:>7.8f}')
+        if vtkfile is not None:
+            vtkfile << (w, t)
 
-        vtkfile << (w, t)
+        print(f'Time {t:>7.5f} m {m:>7.8f} E {E:>7.8f}')
+        print(w.sub(0).compute_vertex_values().min())
 
     # t = 0
     w.assign(project(Expression(('x[0] < 0 ? hl : hr', '0'), hl=hl, hr=hr, degree=degree), W))
@@ -75,4 +73,8 @@ def shallow_water_1d(s=1, tau=0.01, mesh_size=100, T=1, degree=1):
 
 
 if __name__ == '__main__':
-    shallow_water_1d(s=1.0, tau=0.01, mesh_size=200)
+    from os.path import dirname, join
+    base_dir = dirname(dirname(__file__))
+    paraview = join(base_dir, 'paraview')
+    vtkfname = join(paraview, 'numerical.pvd')
+    shallow_water_1d(s=1.0, tau=0.01, mesh_size=200, vtkfname=None)

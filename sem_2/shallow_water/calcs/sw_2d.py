@@ -2,13 +2,15 @@ from fenics import *
 import numpy as np
 from scipy.constants import g
 from os.path import dirname, join
+from os.path import dirname, join
 
 
 base_dir = dirname(dirname(__file__))
 paraview = join(base_dir, 'paraview')
+mesh_dir = join(base_dir, 'mesh')
 
-#set_log_level(LogLevel.WARNING)
-set_log_level(LogLevel.PROGRESS)
+set_log_level(LogLevel.WARNING)
+#set_log_level(LogLevel.PROGRESS)
 
 
 def shallow_water_1d(s=1, tau=0.01, mesh_size=100, T=1, degree=1):
@@ -22,7 +24,8 @@ def shallow_water_1d(s=1, tau=0.01, mesh_size=100, T=1, degree=1):
     t = 0
     ts = np.linspace(t, T, round(T / tau) + 1)
 
-    mesh = RectangleMesh(Point(-domain_x, -domain_y), Point(domain_x, domain_y), mesh_size, ms_y)
+    #mesh = RectangleMesh(Point(-domain_x, -domain_y), Point(domain_x, domain_y), mesh_size, ms_y)
+    mesh = Mesh(join(mesh_dir, 'res.xml'))
 
     H = FiniteElement('P', mesh.ufl_cell(), degree)
     U = VectorElement('P', mesh.ufl_cell(), degree)
@@ -77,7 +80,7 @@ def shallow_water_1d(s=1, tau=0.01, mesh_size=100, T=1, degree=1):
 
 
 if __name__ == '__main__':
-    shallow_water_1d(s=1, tau=0.005, mesh_size=200)
+    shallow_water_1d(s=1, tau=0.004, mesh_size=200)
     #shallow_water_1d(s=1, tau=0.005, mesh_size=200)
 
     # from multiprocessing import Pool
