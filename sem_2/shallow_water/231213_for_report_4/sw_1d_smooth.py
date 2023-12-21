@@ -6,7 +6,7 @@ from scipy.constants import g
 set_log_level(LogLevel.WARNING)
 
 
-def sw_1d_smooth(s=1, tau=0.01, mesh_size=100, T=1, dif_t=[], degree=1, vtkfname=None):
+def sw_1d_smooth(hl, s=1, tau=0.01, mesh_size=100, T=1, dif_t=[], degree=1, vtkfname=None):
     vtkfile = File(vtkfname) if vtkfname is not None else None
     domain_size = 5
     Es = []
@@ -54,7 +54,7 @@ def sw_1d_smooth(s=1, tau=0.01, mesh_size=100, T=1, dif_t=[], degree=1, vtkfname
             vtkfile << (q, t)
 
     # t = 0
-    q.assign(project(Expression(('x[0] <= 0 ? 3 : 1 + alf*exp(-bet*(x[0]*x[0]))', '0'), alf=2, bet=20, degree=degree), Q))
+    q.assign(project(Expression(('x[0] <= 0 ? hl : 1 + alf*exp(-bet*(x[0]*x[0]))', '0'), hl=hl, alf=hl-1, bet=20, degree=degree), Q))
     collect_data()
     qn.assign(q)
 

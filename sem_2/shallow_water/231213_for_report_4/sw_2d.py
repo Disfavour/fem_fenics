@@ -12,7 +12,7 @@ def sw_2d(s, tau, mesh_size, T, degree=1, vtkfname=None):
     ms = []
     Es = []
 
-    hl, hr = 10, 1
+    hl, hr = 3, 1
     domain_size_x = 5
     domain_size_y = 1
     mesh_size_y = mesh_size * domain_size_y // domain_size_x
@@ -79,6 +79,6 @@ if __name__ == '__main__':
     from os.path import dirname, join
     base_dir = dirname(__file__)
     paraview = join(base_dir, 'paraview')
-    vtkfname = join(paraview, 'sw_2d_s1_tau0.005_m200.pvd')
-    sw_2d(1, 0.005, 200, 1, degree=1, vtkfname=vtkfname)
+    vtkfname = join(paraview, 'sw_2d_hl3_s1_tau0.005_m200.pvd')
+    sw_2d(0.5, 0.005, 200, 2, degree=1, vtkfname=None)
     pass

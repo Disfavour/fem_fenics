@@ -58,7 +58,8 @@ def sw_2d_smooth(s, tau, mesh_size, T, degree=1, vtkfname=None):
             vtkfile << (w, t)
 
     # t = 0
-    w.assign(project(Expression(('x[0] <= 0 ? 3 : 1 + alf*exp(-bet*(x[0]*x[0]))', '0', '0'), alf=2, bet=20, degree=degree), W))
+    #w.assign(project(Expression(('x[0] <= 0 ? 3 : 1 + alf*exp(-bet*(x[0]*x[0]))', '0', '0'), alf=2, bet=20, degree=degree), W))
+    w.assign(project(Expression(('x[0] <= 0 ? 10 : 1 + alf*exp(-bet*(x[0]*x[0]))', '0', '0'), alf=9, bet=20, degree=degree), W))
 
     collect_data()
 
@@ -78,6 +79,6 @@ if __name__ == '__main__':
     from os.path import dirname, join
     base_dir = dirname(__file__)
     paraview = join(base_dir, 'paraview')
-    vtkfname = join(paraview, 'sw_2d_smooth_s1_tau0.005_m200.pvd')
+    vtkfname = join(paraview, 'test_sw_2d_smooth_s1_tau0.005_m200.pvd')
     sw_2d_smooth(1, 0.005, 200, 2, degree=1, vtkfname=vtkfname)
     pass
