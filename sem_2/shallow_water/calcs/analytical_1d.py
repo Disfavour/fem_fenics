@@ -77,3 +77,7 @@ prm['snes_solver']['report'] = True
 
 # Решение нелинейной задачи
 solver.solve()
+
+#info(NonlinearVariationalSolver.default_parameters(), True)
+#print(*NonlinearVariationalSolver.default_parameters())
+#print(list_linear_solver_methods())
