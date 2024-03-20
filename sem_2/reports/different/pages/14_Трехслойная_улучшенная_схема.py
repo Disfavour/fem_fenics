@@ -9,10 +9,12 @@ r'''
 # Трехслойная схема
 
 $$
+\begin{aligned}
 \frac {\partial \varphi} {\partial t} = \theta \frac {\varphi^{n+1} - \varphi^n} {\tau} + (1 - \theta) \frac {\varphi^{n} - \varphi^{n-1}} {\tau}
 \\[0.5 cm]
 \varphi^{n+\sigma} = \sigma \varphi^{n+1} + (1 - 2 \sigma) \varphi^n + \sigma \varphi^{n-1}
 \\[0.5 cm]
+\end{aligned}
 $$
 
 $$
