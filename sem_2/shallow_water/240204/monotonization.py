@@ -5,6 +5,7 @@ import numpy as np
 from multiprocessing import Pool
 import monotonization_1
 import monotonization_2
+import monotonization_all
 
 
 def plot_dif_times(hl, hr, mesh_size, tau, alfa, gamma, data_dir, images_dir):
@@ -96,6 +97,24 @@ def monotonization2(data_dir, images_dir):
     gammas = list(np.arange(-5, 5.1, 0.5))
     
     experiments(2, 1, 0.9, mesh_sizes, taus, alfas, gammas, monotonization_2.calculate, data_dir, images_dir)
+
+
+def monotonization_full(data_dir, images_dir):
+    name = 'monotonization_full'
+    data_dir = join(data_dir, name)
+    images_dir = join(images_dir, name)
+    makedirs(data_dir, exist_ok=True)
+    makedirs(images_dir, exist_ok=True)
+
+    mesh_sizes = (800, 400, 200)
+    taus = (0.005, 0.01, 0.02)
+    degrees = list(range(1, 4))
+    T = 7.0
+    sigma = 0.5
+    alfas = [-(10 ** i) for i in range(4, 0, -1)] + list(range(-9, -1)) + [round(i*0.1 - 1, 2) for i in range(21)] + list(range(2, 10)) + [10 ** i for i in range(1, 5)]
+    gammas = list(np.arange(-1, 4.1, 0.5))
+    kappas = list(np.arange(0, 2.01, 0.25))
+    ntests = (1, 2)
 
 
 if __name__ == '__main__':

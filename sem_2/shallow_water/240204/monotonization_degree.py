@@ -1,13 +1,11 @@
 from fenics import *
 import numpy as np
-from scipy.constants import g
-import analytic
 
 
 set_log_level(LogLevel.WARNING)
 
 
-def calculate(mesh_size, tau, degree, T, ts2store, info=False):
+def calculate(mesh_size, tau, degree, sigma, T, ts2store, ntest, info=False):
     domain_size = 5
 
     u_= []
@@ -24,7 +22,10 @@ def calculate(mesh_size, tau, degree, T, ts2store, info=False):
     u = TrialFunction(P)
     ut = TestFunction(P)
 
-    F = ((u - un)/tau + u.dx(0)) * ut*dx
+    dt = (u - un)/tau
+    us = sigma*u + (1-sigma)*un
+
+    F = (dt + us.dx(0)) * ut*dx
     a, L = lhs(F), rhs(F)
 
     u = Function(P)
@@ -37,7 +38,10 @@ def calculate(mesh_size, tau, degree, T, ts2store, info=False):
             print(f'Time {t:>7.5f}')
 
     t = 0
-    u.assign(project(Expression('x[0] <= -4 ? 1 : 0', degree=1), P))
+    if ntest == 1:
+        u.assign(project(Expression('x[0] > -4 && x[0] < -3 ? 1 : 0', degree=1), P))
+    elif ntest == 2:
+        u.assign(project(Expression('x[0] > -4 && x[0] < -3 ? sin(x[0] * 2 * pi) : 0', degree=degree), P))
     collect_data()
     un.assign(u)
 
@@ -53,12 +57,15 @@ if __name__ == '__main__':
     import time
     import matplotlib.pyplot as plt
     strart_time = time.time()
-    x, u = calculate(mesh_size=400, tau=0.01, degree=1, T=1.0, ts2store=[0.3, 0.5, 0.9], info=True)
+    x, u = calculate(mesh_size=400, tau=0.01, degree=1, sigma=0.5, T=7.0, ts2store=[0.0, 3.5, 7.0], ntest=1, info=True)
     plt.figure()
     plt.plot(x, u.T)
+    x, u = calculate(mesh_size=400, tau=0.01, degree=3, sigma=0.5, T=7.0, ts2store=[0.0, 3.5, 7.0], ntest=1, info=True)
     plt.figure()
-    for i in u:
-        plt.plot(x, i)
+    plt.plot(x, u.T)
+    # plt.figure()
+    # for i in u:
+    #     plt.plot(x, i)
     plt.show()
     #calculate(2, 1, 0.9, 400, 0.01, 0.1, 1.0, [], True)
     print(time.time() - strart_time)
