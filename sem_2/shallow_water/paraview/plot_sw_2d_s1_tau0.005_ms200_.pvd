@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<VTKFile type="Collection" version="0.1">
-  <Collection>
-    <DataSet timestep="0" part="0" file="plot_sw_2d_s1_tau0.005_ms200_000000.vtu" />
-  </Collection>
-</VTKFile>
