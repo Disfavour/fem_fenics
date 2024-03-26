@@ -26,9 +26,10 @@ dir2 = join(dirname(dirname(__file__)), 'images', name2)
 rf'## Результаты решения начально-краевой задачи'
 '### Решения на различные моменты времени'
 
-ntest = st.select_slider(r'$ntest$', ntests)
-mesh_size = st.select_slider(r'$M$', reversed(mesh_sizes))
-tau = st.select_slider(r'$\tau$', taus)
+with st.columns([0.25, 0.5, 0.25])[1]:
+    ntest = st.select_slider(r'$ntest$', ntests)
+    mesh_size = st.select_slider(r'$M$', mesh_sizes)
+    tau = st.select_slider(r'$\tau$', taus)
 
 cols = st.columns(2)
 with cols[0]:

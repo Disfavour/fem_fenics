@@ -36,7 +36,7 @@ u_old = Function(V)
 # u0 = project(U0, V)
 u0 = interpolate(U0, V)
 plot(u0)
-plt.show()
+#plt.show()
 u_old.assign(u0)
 u.assign(u_old)
 
@@ -54,7 +54,7 @@ dt = cu*dt0
 # Define the variational formulation of the problem
 F = 1.0/dt*(u - u_old)*u_t*dx + 0.5*(u.dx(0)+u_old.dx(0))*u_t*dx # CN
 # F = F + ss*(u.dx(0)-u_old.dx(0))*u_t*dx # схема с весом ss = sig - 0.5
-#F = F + ss*dt*u.dx(0)*u_t.dx(0)*dx  # искуственная вязкость  
+F = F + ss*dt*u.dx(0)*u_t.dx(0)*dx  # искуственная вязкость  
 
 bc = DirichletBC(V, Constant(0.), 'on_boundary && near(x[0],0)')
 
@@ -67,15 +67,17 @@ while t < T - dt/2:
             
     if abs(t - 0.25) < 0.1*dt:
         plot(u)
-        plt.show()
+        #plt.show()
     
     if abs(t - 0.5) < 0.1*dt:
         plot(u)
-        plt.show()
+        #plt.show()
             
     if abs(t - 0.75) < 0.1*dt:
         plot(u)
-        plt.show()
+        #plt.show()
+
+plt.show()
         
 
 

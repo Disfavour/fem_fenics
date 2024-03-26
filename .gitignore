@@ -1,3 +1,10 @@
+*.png
+*.pdf
+*.npy
+*.npz
+*.pvd
+*.vtu
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
