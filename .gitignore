@@ -1,9 +1,12 @@
-*.png
-*.pdf
-*.npy
-*.npz
-*.pvd
-*.vtu
+#**/logs
+#**/images
+/images
+# *.png
+# *.pdf
+# *.npy
+# *.npz
+# *.pvd
+# *.vtu
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
