@@ -101,9 +101,9 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     strart_time = time.time()
     #ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 400, 0.01, None, 1.0, [0.9], True)
-    ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 200, 0.005, None, 0.6, [0.9], True)
-    plt.plot(x, h_[0])
-    plt.plot(x_e, h_e[0], ':')
+    ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 200, 0.005, None, 0.9, [0.3, 0.6, 0.9], True)
+    plt.plot(x, h_.T)
+    #plt.plot(x_e, h_e[0], ':')
     plt.show()
     print(time.time() - strart_time)
     pass

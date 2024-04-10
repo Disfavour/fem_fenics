@@ -17,5 +17,7 @@ params = [(alfa, gamma)
 print(params)
 
 alfas = [-10**i for i in range(4, -1, -1)] + [-0.5, 0.0, 0.5] + [10**i for i in range(5)]
-print(alfas)
+print([0] + [0.01 * 2**i for i in range(8)])
 print()
+
+print(abs(np.array([-1, 12.32, -32.123])))

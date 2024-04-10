@@ -1,6 +1,7 @@
 #**/logs
 #**/images
 /images
+/data
 # *.png
 # *.pdf
 # *.npy
@@ -8,7 +9,7 @@
 # *.pvd
 # *.vtu
 
-**/jitfailure*
+**/jitfailure-dolfin*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
