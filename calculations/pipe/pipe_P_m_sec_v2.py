@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 P_in, P_out, m_in, m_out = [], [], [], []
 
 t_max = 24 * 3600
-mesh_size = 5
-tau = 50
+mesh_size = 5000
+tau = 100
 
 L = 1e5
 T = 278
@@ -31,8 +31,9 @@ Rs = R / M
 P_left = 5e6
 P_0_right = 4.2e6
 Q_0 = 70
+rho = 0.73
 # t в часах
-m_out_expr = Expression('rho_out * (t < 2 ? 20*t+70 : (t < 10 ? 110 : (t < 12 ? -40*t+510 : (t < 22 ? 30 : 20*t-410))))', rho_out=0, t=0, degree=1)
+m_out_expr = Expression('rho * (t < 2 ? 20*t+70 : (t < 10 ? 110 : (t < 12 ? -40*t+510 : (t < 22 ? 30 : 20*t-410))))', rho=rho, t=0, degree=1)
 
 ts = np.arange(0, t_max+tau/2, tau)
 mesh = IntervalMesh(mesh_size, 0, L)
@@ -83,8 +84,8 @@ def collect_data():
 
 
 t = 0
-w.assign(project(Expression(('(P_left + x[0]*(P_right - P_left)/L)', '(P_left + x[0]*(P_right - P_left)/L) / (Rs*T) * Q_0'),
-                            P_left=P_left, P_right=P_0_right, L=L, Rs=Rs, T=T, Q_0=Q_0, degree=1), W))
+w.assign(project(Expression(('(P_left + x[0]*(P_right - P_left)/L)', 'rho * Q_0'),
+                            P_left=P_left, P_right=P_0_right, L=L, rho=rho, Q_0=Q_0, degree=1), W))
 # w.assign(project(Expression(('(P_left + x[0]*(P_right - P_left)/L)', '0.73 * Q_0'),
 #                             P_left=P_left, P_right=P_0_right, L=L, Rs=Rs, T=T, Q_0=Q_0, degree=1), W))
 collect_data()
@@ -99,10 +100,9 @@ wn.assign(w)
 # exit()
 
 
-#m_out_expr.rho_out = 0.73
 for t in ts[1:]:
     m_out_expr.t = t / 3600
-    m_out_expr.rho_out = w.sub(0)(L)/(Rs*T)
+    #m_out_expr.rho_out = w.sub(0)(L)/(Rs*T)
     #print(m_out_expr.rho_out)
 
     solve(F == 0, w, bc, solver_parameters={"newton_solver": {

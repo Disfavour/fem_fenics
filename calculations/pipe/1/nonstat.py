@@ -9,7 +9,7 @@ from  scipy.optimize import newton
 
 P_in, P_out, m_in, m_out = [], [], [], []
 
-t_max = 1
+t_max = 10000
 mesh_size = 100
 tau = 0.1
 
@@ -22,6 +22,8 @@ A = pi * D**2 / 4
 eps = 0.000617
 Re = 14000
 f = (-2*np.log10(eps/D/3.7 - 4.518/Re*np.log10(6.9/Re + (eps/D/3.7)**1.11))) ** -2
+f = 0.003
+print(f)
 
 S = 0.6
 M_air = 28.964917 / 1000
@@ -31,6 +33,7 @@ Rs = R / M
 P_left = 5e6
 #rho = P_left / (Rs * T)
 rho = 0.73
+#m_right = rho * 70
 m_right = rho * 70
 
 
@@ -42,10 +45,18 @@ B = f * m_right**2 * Rs * T / (2 * D * A**2)
 C = P_left**2 / 2 - gamma * np.log(P_left)
 
 xs = mesh.coordinates().flatten()
-exact = []
-for x in xs:
-    exact.append(newton(lambda p: p**2/2 - gamma * np.log(p) + B*x - C, P_left))
+f = lambda p, x: p**2/2 - gamma * np.log(p) + B*x - C
+fprime = lambda p, x: p - gamma / p
+fprime2 = lambda p, x: 1 + gamma / p**2
+exact = [newton(f, P_left, fprime, (xs[0],), fprime2=fprime2)]
+for x in xs[1:]:
+    exact.append(newton(f, exact[-1], fprime, (x,), maxiter=1000,  fprime2=fprime2))
 exact = np.array(exact)
+print(exact[-1])
+
+plt.plot(exact)
+plt.show()
+exit()
 
 P = FiniteElement('P', mesh.ufl_cell(), 1)
 M = FiniteElement('P', mesh.ufl_cell(), 1)

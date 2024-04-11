@@ -8,9 +8,9 @@ set_log_level(LogLevel.WARNING)
 
 P_in, P_out, m_in, m_out = [], [], [], []
 
-t_max = 24 * 3600
+t_max = 48 * 3600
 mesh_size = 5
-tau = 0.1
+tau = 1200
 
 L = 1e5
 T = 278
@@ -18,9 +18,15 @@ T = 278
 D = 0.6
 A = pi * D**2 / 4
 
+#eps = 0.000617
 eps = 0.000617
-Re = 2000
-f = (-2*np.log10(eps/D/3.7 - 4.518/Re*np.log10(6.9/Re + (eps/D/3.7)**1.11))) ** -2 
+Re = 6000
+f = (-2*np.log(eps/D/3.7 - 4.518/Re*np.log(6.9/Re + (eps/D/3.7)**1.11))) ** -2
+print(0.0044 * (1 + 12 / (0.246 * D)))
+#f = 0.003
+#f = 0.003
+#print(f)
+#exit()
 
 S = 0.6
 M_air = 28.964917 / 1000
@@ -54,7 +60,8 @@ Pt, mt = TestFunctions(W)
 P, m = split(w)
 Pn, mn = split(wn)
 
-Z = 1 + k * P
+#Z = 1 + k * P
+Z = 1
 
 F = ((P-Pn)/(tau*Z*Rs*T) + m.dx(0)/A) * Pt*dx \
     + ((m-mn)/(tau*A) + Rs*T/A**2*(Z*m**2/P).dx(0) + P.dx(0) + Z*Rs*T*f*m*abs(m)/(2*D*A**2*P)) * mt*dx
@@ -65,8 +72,9 @@ def collect_data():
     m_in.append(w.sub(1)(0))
     m_out.append(w.sub(1)(L))
 
-    if t % 100 == 0:
+    if t % 3600 == 0:
         print(f'Time {t:>7.5f}')
+        print(m_out_expr.rho_out, w.sub(0)(L))
 
         # plt.figure()
         # plt.plot(ts[:len(P_in)], P_in)
@@ -91,9 +99,9 @@ def collect_data():
 
 t = 0
 w.assign(project(Expression(('(P_left + x[0]*(P_right - P_left)/L)', 'rho * Q_0'),
-                            P_left=P_left, P_right=P_0_right, L=L, Rs=Rs, T=T, rho=rho, Q_0=Q_0, degree=1), W))
-# w.assign(project(Expression(('(P_left + x[0]*(P_right - P_left)/L)', '0.73 * Q_0'),
-#                             P_left=P_left, P_right=P_0_right, L=L, Rs=Rs, T=T, Q_0=Q_0, degree=1), W))
+                            P_left=P_left, P_right=P_0_right, rho=rho, L=L, Rs=Rs, T=T, Q_0=Q_0, degree=1), W))
+# w.assign(project(Expression(('P_left', '0.73 * Q_0'),
+#                             P_left=P_left, P_right=P_0_right, rho=rho, Q_0=Q_0, degree=1), W))
 collect_data()
 wn.assign(w)
 
@@ -106,15 +114,31 @@ wn.assign(w)
 # exit()
 
 
-
+m_out_expr.rho_out = rho
 for t in ts[1:]:
-    m_out_expr.t = t / 3600
-    m_out_expr.rho_out = w.sub(0)(L)/((1 + k * w.sub(0)(L))*Rs*T)
-    print(m_out_expr.rho_out, w.sub(0)(L))
+    cur_t = t / 3600 if t / 3600 <= 24 else t / 3600 - 24
+    m_out_expr.t = cur_t
+    #m_out_expr.rho_out = w.sub(0)(L)/((1 + k * w.sub(0)(L))*Rs*T)
     
+    solve(F == 0, w, bc, solver_parameters={"newton_solver": {
+            'absolute_tolerance': 1e-5,
+            'relative_tolerance': 1e-5,
+            'maximum_iterations': 50,
+            'relaxation_parameter': 1.0,
+        }})
 
-    solve(F == 0, w, bc)
+    #solve(F == 0, w, bc)
 
     collect_data()
 
     wn.assign(w)
+
+# plt.figure()
+# plt.plot(m_in)
+# plt.figure()
+# plt.plot(m_out)
+# plt.figure()
+# plt.plot(P_in)
+# plt.figure()
+plt.plot(P_out)
+plt.show()
