@@ -18,6 +18,8 @@ def calculate_pipe(mesh_size, tau):
     eps = 0.000617
     Re = 6000
     f = (-2*np.log(eps/D/3.7 - 4.518/Re*np.log(6.9/Re + (eps/D/3.7)**1.11))) ** -2
+    # Работает с шагом 10 и примерно таким f -> фигня
+    f = 0.0005
 
     S = 0.6
     M_air = 28.964917 / 1000
@@ -28,6 +30,8 @@ def calculate_pipe(mesh_size, tau):
     P_0_right = 4.2e6
 
     rho = 0.73
+    Z = P_0_right / (rho * Rs * T)
+    k = (Z - 1) / P_0_right
 
     # t в часах
     m_out_expr = Expression('rho_out * (t < 2 ? 20*t+70 : (t < 10 ? 110 : (t < 12 ? -40*t+510 : (t < 22 ? 30 : 20*t-410))))', rho_out=rho, t=0, degree=1)
@@ -47,7 +51,7 @@ def calculate_pipe(mesh_size, tau):
     P, m = split(w)
     Pn, mn = split(wn)
 
-    Z = 1
+    Z = 1 + k * P
 
     F = ((P-Pn)/(tau*Z*Rs*T) + m.dx(0)/A) * Pt*dx \
         + ((m-mn)/(tau*A) + Rs*T/A**2*(Z*m**2/P).dx(0) + P.dx(0) + Z*Rs*T*f*m*abs(m)/(2*D*A**2*P)) * mt*dx
@@ -58,7 +62,8 @@ def calculate_pipe(mesh_size, tau):
         m_in.append(w.sub(1)(0))
         m_out.append(w.sub(1)(L))
 
-        print(f'Time {t:>7.5f}')
+        if t % 1200:
+            print(f'Time {t:>7.5f} rho_out {m_out_expr.rho_out:>7.5f}')
 
     t = 0
     w.assign(project(Expression(('(P_left + x[0]*(P_right - P_left)/L)', 'rho * 70'),
@@ -68,6 +73,7 @@ def calculate_pipe(mesh_size, tau):
 
     for t in ts[1:]:
         m_out_expr.t = t / 3600 if t / 3600 <= 24 else t / 3600 - 24
+        m_out_expr.rho_out = w.sub(0)(L) / ((1 + k * w.sub(0)(L))*Rs*T)
         solve(F == 0, w, bc, solver_parameters={"newton_solver": {
                 'absolute_tolerance': 1e-5,
                 'relative_tolerance': 1e-5,
@@ -83,7 +89,7 @@ def calculate_pipe(mesh_size, tau):
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
-    P_in, P_out, m_in, m_out = calculate_pipe(mesh_size=100, tau=100)
+    P_in, P_out, m_in, m_out = calculate_pipe(mesh_size=50, tau=10)
 
     plt.figure()
     plt.plot(P_in)
