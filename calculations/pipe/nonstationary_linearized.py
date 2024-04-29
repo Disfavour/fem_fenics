@@ -36,13 +36,18 @@ def calculate(mesh_size, tau, t_max):
     bc = [DirichletBC(W.sub(0), Constant(P_left), 'on_boundary && near(x[0], 0)'),
         DirichletBC(W.sub(1), Constant(m_right), CompiledSubDomain('on_boundary && near(x[0], L)', L=L))]
 
-    w, wn = Function(W), Function(W)
+    wn = Function(W)
     pt, mt = TestFunctions(W)
-    p, m = split(w)
+    p, m = TrialFunctions(W)
     pn, mn = split(wn)
+    
+    Z = 1
 
-    F = ((p-pn)/(tau*Rs*T) + m.dx(0)/A) * pt*dx \
-        + ((m-mn)/(tau*A) + Rs*T/A**2*(m**2/p).dx(0) + p.dx(0) + Rs*T*f*m*abs(m)/(2*D*A**2*p)) * mt*dx
+    F = ((p-pn)/(tau*Z*Rs*T) + m.dx(0)/A) * pt*dx \
+        + ((m-mn)/(tau*A) + Rs*T/A**2*(Z*m*mn/pn).dx(0) + p.dx(0) + Z*Rs*T*f*m*abs(mn)/(2*D*A**2*pn)) * mt*dx
+    a1, L1 = lhs(F), rhs(F)
+
+    w = Function(W)
 
     t = 0
     #w.assign(project(Expression(('P_left-30*x[0]', 'm_right'), P_left=P_left, m_right=m_right, degree=1), W))
@@ -52,12 +57,7 @@ def calculate(mesh_size, tau, t_max):
     wn.assign(w)
 
     for t in ts[1:]:
-        solve(F == 0, w, bc, solver_parameters={"newton_solver": {
-                'absolute_tolerance': 1e-5,
-                'relative_tolerance': 1e-8,
-                'maximum_iterations': 500,
-                'relaxation_parameter': 1.0,
-            }})
+        solve(a1 == L1, w, bc)
         wn.assign(w)
 
     return x, w.sub(0).compute_vertex_values(), stationary_analytic.get_exact(x, D, A, Rs, T, f, m_right, P_left), w.sub(1).compute_vertex_values(), np.full_like(x, m_right)
@@ -66,7 +66,7 @@ def calculate(mesh_size, tau, t_max):
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
-    x, p_numerical, p_analytic, m_numerical, m_analytic = calculate(mesh_size=100, tau=0.25 * 3600, t_max=2 * 3600)
+    x, p_numerical, p_analytic, m_numerical, m_analytic = calculate(mesh_size=100, tau=0.25 * 3600, t_max=8 * 3600)
 
     print(np.allclose(p_numerical, p_analytic))
 

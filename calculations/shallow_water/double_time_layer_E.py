@@ -43,14 +43,35 @@ def calculate(hl, hr, T, mesh_size, tau, degree, sigma, ts2store, info=False):
     m_eq_exact = he * dx
     E_eq_exact = 0.5*(he*ue*ue + g*he*he) * dx
 
+    #special_1 = h*u**2 *u.dx(0) * dx
+    #special_2 = 0.5 * h*u*(u**2).dx(0) * dx
+    #special = 0.5*(h*u*u + g*h*h) * dx
+    #special = 0.5*(h*u*u + g*h*h) * dx - inner(outer(h*u, u), nabla_grad(u)) * dx + 0.5 * h*u*grad(u**2) * dx
+
+    s1 = -0.5 * u**2 * (h*u).dx(0) * dx
+    s2 = g * h * (h*u).dx(0) * dx
+    s3 = u * (h*u**2).dx(0) * dx
+    s4 = g/2 * u*(h**2).dx(0) * dx
+    s5 = -0.5 * u**2 * (h - hn) / tau * dx + g * h * (h - hn) / tau * dx + u * (h*u - hn*hn)/tau * dx
+    s6 = 2*g*h* (h - hn)/tau * dx
+    s7 = g* (h**2 - hn**2)/tau * dx
+
+    t1 = -0.5 * u**2 * (h - hn) / tau * dx
+    t2 = g * h * (h - hn) / tau * dx
+    t3 = u * (h*u - hn*hn) / tau * dx
+    t4 = u * (h * (u - un)/tau + u * (h - hn)/tau) * dx
+
     h = np.array((h, hn))
     u = np.array((u, un))
 
     dt = lambda f: (f[0]-f[1])/tau
     s = lambda f: sigma*f[0] + (1-sigma)*f[1]
     
+    # F = (dt(h) + s(h*u).dx(0)) * ht*dx \
+    #     + (dt(h*u) + s(h*u**2).dx(0) + g/2*s(h**2).dx(0)) * ut*dx
+    
     F = (dt(h) + s(h*u).dx(0)) * ht*dx \
-        + (dt(h*u) + s(h*u**2).dx(0) + g/2*s(h**2).dx(0)) * ut*dx
+        + (h[0] * dt(u) + u[0] * dt(h) + s(h*u**2).dx(0) + g/2*s(h**2).dx(0)) * ut*dx
 
     get_exact_solution = analytic.get_solution_func(hl, hr)
 
@@ -76,7 +97,12 @@ def calculate(hl, hr, T, mesh_size, tau, degree, sigma, ts2store, info=False):
             u_e.append(we.sub(1).compute_vertex_values())
         
         if info:
-            print(f'Time {t:>7.5f} m {m[-1]:>7.5f} E {E[-1]:>7.5f}')
+            print(f'Time {t:>7.5f} m {m[-1]:>7.5f} E {E[-1]:>7.5f} {err_h[-1]:>7.5f}')
+            res = list(map(assemble, (s1, s2, s3, s4)))
+            #print(f'{res[0]:>7.5f} {res[1]:>7.5f} {res[2]:>7.5f} {res[3]:>7.5f} {sum(res):>7.5f} {sum(res) + E[-1]:>7.5f}')
+            if t > 0:
+                res1 = tuple(map(assemble, (t1, t2, t3, t4)))
+                print(f'{res1[0]:>7.5f} {res1[1]:>7.5f} {res1[2]:>7.5f} {res1[3]:>7.5f} {res1[0]+res1[1]+res1[3]:>7.5f}')
 
     t = 0
     w.assign(project(Expression(('x[0] <= 0 ? hl : hr', '0'), hl=hl, hr=hr, degree=1), W))
@@ -100,10 +126,13 @@ if __name__ == '__main__':
     import time
     import matplotlib.pyplot as plt
     strart_time = time.time()
-    #ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 400, 0.01, None, 1.0, [0.9], True)
-    ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 200, 0.005, 2, 0.6, [0.3, 0.6, 0.9], True)
+    #ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 200, 0.005, 2, 0.6, [0.3, 0.6, 0.9], True)
+    #ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.6, 400, 0.01, 2, 0.5, [0.3, 0.6, 0.9], True)
+    ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(10, 1, 0.4, 200, 0.005, 1, 1, [0.1, 0.25, 0.4], True)
     plt.plot(x, h_.T)
+    plt.plot(x_e, h_e.T, ':')
     #plt.plot(x_e, h_e[0], ':')
+    #plt.savefig('1')
     plt.show()
     print(time.time() - strart_time)
     pass

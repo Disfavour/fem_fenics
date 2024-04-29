@@ -109,26 +109,26 @@ def experiments(hl, hr, T, mesh_sizes, taus, thetas, sigmas, calculate, data_dir
         res1 = p.starmap_async(store_data, params)
         res1.wait()
 
-    params_dif = ((hl, hr, mesh_size, tau, theta, sigma, data_dir, images_dir)
-              for mesh_size in mesh_sizes for tau in taus for theta in thetas for sigma in sigmas)
+    # params_dif = ((hl, hr, mesh_size, tau, theta, sigma, data_dir, images_dir)
+    #           for mesh_size in mesh_sizes for tau in taus for theta in thetas for sigma in sigmas)
 
-    params_dif_ms = ((hl, hr, mesh_sizes, tau, theta, sigma, data_dir, images_dir)
-              for tau in taus for theta in thetas for sigma in sigmas)
-    params_dif_tau = ((hl, hr, mesh_size, taus, theta, sigma, data_dir, images_dir)
-              for mesh_size in mesh_sizes for theta in thetas for sigma in sigmas)
-    params_dif_theta = ((hl, hr, mesh_size, tau, thetas, sigma, data_dir, images_dir)
-              for mesh_size in mesh_sizes for tau in taus for sigma in sigmas) if len(thetas) > 1 else ()
-    params_dif_sigma = ((hl, hr, mesh_size, tau, theta, sigmas, data_dir, images_dir)
-              for mesh_size in mesh_sizes for tau in taus for theta in thetas) if len(sigmas) > 1 else ()
+    # params_dif_ms = ((hl, hr, mesh_sizes, tau, theta, sigma, data_dir, images_dir)
+    #           for tau in taus for theta in thetas for sigma in sigmas)
+    # params_dif_tau = ((hl, hr, mesh_size, taus, theta, sigma, data_dir, images_dir)
+    #           for mesh_size in mesh_sizes for theta in thetas for sigma in sigmas)
+    # params_dif_theta = ((hl, hr, mesh_size, tau, thetas, sigma, data_dir, images_dir)
+    #           for mesh_size in mesh_sizes for tau in taus for sigma in sigmas) if len(thetas) > 1 else ()
+    # params_dif_sigma = ((hl, hr, mesh_size, tau, theta, sigmas, data_dir, images_dir)
+    #           for mesh_size in mesh_sizes for tau in taus for theta in thetas) if len(sigmas) > 1 else ()
     
-    with Pool() as p:
-        tmp = []
-        tmp.append(p.starmap_async(plot_dif_times, params_dif))
-        tmp.append(p.starmap_async(plot_dif_ms, params_dif_ms))
-        tmp.append(p.starmap_async(plot_dif_tau, params_dif_tau))
-        tmp.append(p.starmap_async(plot_dif_theta, params_dif_theta))
-        tmp.append(p.starmap_async(plot_dif_sigma, params_dif_sigma))
-        list(map(lambda x: x.wait(), tmp))
+    # with Pool() as p:
+    #     tmp = []
+    #     tmp.append(p.starmap_async(plot_dif_times, params_dif))
+    #     tmp.append(p.starmap_async(plot_dif_ms, params_dif_ms))
+    #     tmp.append(p.starmap_async(plot_dif_tau, params_dif_tau))
+    #     tmp.append(p.starmap_async(plot_dif_theta, params_dif_theta))
+    #     tmp.append(p.starmap_async(plot_dif_sigma, params_dif_sigma))
+    #     list(map(lambda x: x.wait(), tmp))
 
 
 def test_double_time_layer(data_dir, images_dir):
@@ -142,6 +142,7 @@ def test_double_time_layer(data_dir, images_dir):
     taus = (0.005, 0.01, 0.02)
     thetas = (1.0,)
     sigmas = (0.5, 0.75, 1.0, 1.25, 1.5)
+    #sigmas = (2.0,)
     
     experiments(2, 1, 0.9, mesh_sizes, taus, thetas, sigmas, double_time_layer.calculate, data_dir, images_dir)
 
@@ -175,6 +176,21 @@ def test_triple_time_layer_2(data_dir, images_dir):
 
     experiments(2, 1, 0.9, mesh_sizes, taus, thetas, sigmas, triple_time_layer_2.calculate, data_dir, images_dir)
 
+def test_double_time_layer_special(data_dir, images_dir):
+    name = 'double_time_layer'
+    data_dir = join(data_dir, name)
+    images_dir = join(images_dir, name)
+    makedirs(data_dir, exist_ok=True)
+    makedirs(images_dir, exist_ok=True)
+
+    mesh_sizes = (200,)
+    taus = (0.005,)
+    thetas = (1, 2) # degree
+    sigmas = (0.6,)
+    #sigmas = (2.0,)
+    
+    experiments(2, 1, 0.9, mesh_sizes, taus, thetas, sigmas, double_time_layer.calculate, data_dir, images_dir)
+
 
 # 2, 1, 0.9 and 10, 1, 0.4
 if __name__ == '__main__':
@@ -188,9 +204,11 @@ if __name__ == '__main__':
         f(*params)
         print(time.time() - start_time)
 
-    timeit(test_double_time_layer, (data_dir, images_dir))
-    timeit(test_triple_time_layer_1, (data_dir, images_dir))
-    timeit(test_triple_time_layer_2, (data_dir, images_dir))
+    # timeit(test_double_time_layer, (data_dir, images_dir))
+    # timeit(test_triple_time_layer_1, (data_dir, images_dir))
+    # timeit(test_triple_time_layer_2, (data_dir, images_dir))
+
+    timeit(test_double_time_layer_special, (data_dir, images_dir))
 
     # t, m, E, m_e, E_e, err_h, err_u, x, h, u, x_e, h_e, u_e = triple_layer_improved.get_solution(3, 1, 0.9, 200, 0.005, 0.5, 1/6, [0.1, 0.5, 0.9])
     # t2, m2, E2, m_e2, E_e2, err_h2, err_u2, x2, h2, u2, x_e2, h_e2, u_e2 = triple_layer_improved_v2.get_solution(3, 1, 0.9, 200, 0.005, 0.5, 1/6, [0.1, 0.5, 0.9])

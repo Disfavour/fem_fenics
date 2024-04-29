@@ -36,17 +36,17 @@ def plot(mesh_size, tau, degree, alfa, gamma, kappa, ntest, fname, images_dir):
 
 def process_nonlinear_viscosity(mesh_size, tau, p, T, ts2store, a, y, test, data_dir, images_dir):
         try:
-            x, u, t, m = nonlinear_viscosity.calculate(mesh_size, tau, p, T, ts2store, a, y, test)
+            x, u, t, err = nonlinear_viscosity.calculate(mesh_size, tau, p, T, ts2store, a, y, test)
         except:
             return
         ts2store = np.array(ts2store)
-        np.savez_compressed(join(data_dir, f'a{a}_y{y}_p{p}_test{test}.npz'), x=x, u=u, t=t, m=m, ts=ts2store)
+        np.savez_compressed(join(data_dir, f'a{a}_y{y}_test{test}.npz'), x=x, u=u, t=t, err=err, ts=ts2store)
 
-        plotting.base([x for i in range(ts2store.size)], u, r'$x$', r'$u$', [f'$t={i}$' for i in ts2store],
-                      join(images_dir, f'a{a}_y{y}_p{p}_test{test}.png'))
+        # plotting.base([x for i in range(ts2store.size)], u, r'$x$', r'$u$', [f'$t={i}$' for i in ts2store],
+        #               join(images_dir, f'a{a}_y{y}_p{p}_test{test}.png'))
         
-        plotting.base([t], [m], r'$t$', r'$m$', [],
-                      join(images_dir, f'm_a{a}_y{y}_p{p}_test{test}.png'))
+        # plotting.base([t], [m], r'$t$', r'$m$', [],
+        #               join(images_dir, f'm_a{a}_y{y}_p{p}_test{test}.png'))
 
 
 def experiments_nonlinear_viscosity(data_dir, images_dir):
@@ -63,9 +63,9 @@ def experiments_nonlinear_viscosity(data_dir, images_dir):
 
     tests = list(range(1, 4))
 
-    degrees = list(range(1, 4))
-    alfas = [0] + [2**i for i in range(8)]
-    gammas = list(range(4))
+    degrees = [1] #list(range(1, 4))
+    alfas = [0, 1, 16, 32] #[0] + [2**i for i in range(8)]
+    gammas = list(range(3))
 
     param_combinations = [
         (mesh_size, tau, p, T, ts2store, a, y, test, data_dir, images_dir)
@@ -83,17 +83,17 @@ def experiments_nonlinear_viscosity(data_dir, images_dir):
 
 def process(mesh_size, tau, p, T, ts2store, k, test, data_dir, images_dir, calculate):
         try:
-            x, u, t, m = calculate(mesh_size, tau, p, T, ts2store, k, test)
+            x, u, t, err = calculate(mesh_size, tau, p, T, ts2store, k, test)
         except:
             return
         ts2store = np.array(ts2store)
-        np.savez_compressed(join(data_dir, f'k{k}_p{p}_test{test}.npz'), x=x, u=u, t=t, m=m, ts=ts2store)
+        np.savez_compressed(join(data_dir, f'k{k}_test{test}.npz'), x=x, u=u, t=t, err=err, ts=ts2store)
 
-        plotting.base([x for i in range(ts2store.size)], u, r'$x$', r'$u$', [f'$t={i}$' for i in ts2store],
-                      join(images_dir, f'k{k}_p{p}_test{test}.png'))
+        # plotting.base([x for i in range(ts2store.size)], u, r'$x$', r'$u$', [f'$t={i}$' for i in ts2store],
+        #               join(images_dir, f'k{k}_p{p}_test{test}.png'))
         
-        plotting.base([t], [m], r'$t$', r'$m$', [],
-                      join(images_dir, f'm_k{k}_p{p}_test{test}.png'))
+        # plotting.base([t], [m], r'$t$', r'$m$', [],
+        #               join(images_dir, f'm_k{k}_p{p}_test{test}.png'))
 
 
 def experiments(calculate, data_dir, images_dir):
@@ -104,8 +104,8 @@ def experiments(calculate, data_dir, images_dir):
 
     tests = list(range(1, 4))
 
-    degrees = list(range(1, 4))
-    kappas = [0] + [0.01 * 2**i for i in range(8)]
+    degrees = [1]
+    kappas = [0.0, 0.04, 0.08] #[0] + [0.01 * 2**i for i in range(8)]
 
     param_combinations = [
         (mesh_size, tau, p, T, ts2store, k, test, data_dir, images_dir, calculate)
@@ -156,7 +156,7 @@ if __name__ == '__main__':
         f(*params)
         print(time.time() - start_time)
         
-    #timeit(experiments_nonlinear_viscosity, (data_dir, images_dir))
-    timeit(test_viscosity1, (data_dir, images_dir))
-    timeit(test_viscosity2, (data_dir, images_dir))
-    timeit(test_weight, (data_dir, images_dir))
+    timeit(experiments_nonlinear_viscosity, (data_dir, images_dir))
+    #timeit(test_viscosity1, (data_dir, images_dir))
+    #timeit(test_viscosity2, (data_dir, images_dir))
+    #timeit(test_weight, (data_dir, images_dir))
