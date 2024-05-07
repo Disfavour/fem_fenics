@@ -1,7 +1,7 @@
 from fenics import *
 import numpy as np
 from scipy.constants import pi, R
-import stationary_analytic
+
 
 set_log_level(LogLevel.WARNING)
 

@@ -15,9 +15,7 @@ def calculate_pipe(mesh_size, tau):
     D = 0.6
     A = pi * D**2 / 4
 
-    eps = 0.000617
-    Re = 6000
-    f = (-2*np.log(eps/D/3.7 - 4.518/Re*np.log(6.9/Re + (eps/D/3.7)**1.11))) ** -2
+    f = 0.00875
 
     S = 0.6
     M_air = 28.964917 / 1000
@@ -25,7 +23,6 @@ def calculate_pipe(mesh_size, tau):
     Rs = R / M
 
     P_left = 5e6
-    P_0_right = 4.2e6
 
     rho = 0.73
 
@@ -53,18 +50,27 @@ def calculate_pipe(mesh_size, tau):
         + ((m-mn)/(tau*A) + Rs*T/A**2*(Z*m**2/P).dx(0) + P.dx(0) + Z*Rs*T*f*m*abs(m)/(2*D*A**2*P)) * mt*dx
 
     def collect_data():
+        print(f'Time {t:>7.5f}')
         P_in.append(w.sub(0)(0))
         P_out.append(w.sub(0)(L))
         m_in.append(w.sub(1)(0))
         m_out.append(w.sub(1)(L))
 
-        print(f'Time {t:>7.5f}')
-
     t = 0
-    w.assign(project(Expression(('(P_left + x[0]*(P_right - P_left)/L)', 'rho * 70'),
-                                P_left=P_left, P_right=P_0_right, rho=rho, L=L, degree=1), W))
-    collect_data()
+    w.assign(project(Expression(('P', 'm'), P=P_left, m=rho*70, degree=0), W))
     wn.assign(w)
+
+    # установившееся течение - это начальные условия
+    for i in range(int(5*3600 // tau)):
+        solve(F == 0, w, bc, solver_parameters={"newton_solver": {
+                'absolute_tolerance': 1e-5,
+                'relative_tolerance': 1e-5,
+                'maximum_iterations': 50,
+                'relaxation_parameter': 1.0,
+            }})
+        wn.assign(w)
+    
+    collect_data()
 
     for t in ts[1:]:
         m_out_expr.t = t / 3600 if t / 3600 <= 24 else t / 3600 - 24
@@ -77,28 +83,19 @@ def calculate_pipe(mesh_size, tau):
         collect_data()
         wn.assign(w)
     
-    return map(np.array, (P_in, P_out, m_in, m_out))
+    return map(np.array, (ts, P_in, P_out, m_in, m_out))
 
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
-    P_in, P_out, m_in, m_out = calculate_pipe(mesh_size=100, tau=100)
+    t, P_in, P_out, m_in, m_out = calculate_pipe(mesh_size=100, tau=100)
 
     plt.figure()
-    plt.plot(P_in)
-    plt.title('P_in')
-
-    plt.figure()
-    plt.plot(P_out)
+    plt.plot(t, P_out)
     plt.title('P_out')
-
-    plt.figure()
-    plt.plot(m_in)
-    plt.title('m_in')
-
-    plt.figure()
-    plt.plot(m_out)
-    plt.title('m_out')
+    plt.grid()
+    plt.ylim(2.5e6, 5e6)
+    plt.xlim(t[0], t[-1])
 
     plt.show()
