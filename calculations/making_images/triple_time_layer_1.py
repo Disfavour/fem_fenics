@@ -14,10 +14,14 @@ makedirs(data, exist_ok=True)
 makedirs(images, exist_ok=True)
 
 # dif theta
-M = 400
-tau = 0.01
-thetas = (0.5, 1.0, 1.5)
+Ms = [200, 400, 800]
+taus = [0.005, 0.01, 0.02]
+taus.reverse()
+thetas = (1.5, 1.0, 0.5)
 s = 1.0
+
+tau = 0.01
+M = 400
 
 d = []
 for theta in thetas:
@@ -27,11 +31,9 @@ for f in ['h', 'u']:
     xs = [d[0]['x_e']] + [i['x'] for i in d]
     yss = []
     for t in range(d[0]['ts'].size):
-        ys = []
+        ys = [d[0][f'{f}_e'][t]]
         for i in d:
             ys.append(i[f][t])
-        ys.reverse()
-        ys = [d[0][f'{f}_e'][t]] + ys
         yss.append(ys)
         
     ylabel = fr'${f}$'
@@ -40,11 +42,7 @@ for f in ['h', 'u']:
     plotting.dif_times(xs, yss, ylabel, labels, fname)
 
 # dif M
-Ms = [200, 400, 800]
 tau = 0.01
-thetas = (0.5, 1.0, 1.5)
-s = 1.0
-
 d = []
 for M in Ms:
     tmp = []
@@ -62,11 +60,6 @@ for f in ['h', 'u']:
 
 # dif tau
 M = 400
-taus = [0.005, 0.01, 0.02]
-taus.reverse()
-thetas = (0.5, 1.0, 1.5)
-s = 1.0
-
 d = []
 for tau in taus:
     tmp = []

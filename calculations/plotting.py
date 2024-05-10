@@ -13,6 +13,7 @@ def dif_times(xs, yss, ylabel, labels, fname):
 
     lines = ['-', ':', '--', '-.']  # увеличение монотонности
     if len(yss[0]) == 3:
+        #lines = ['-', ':', '--']
         lines = ['-', '--', ':']
 
     for ys, c, label in zip(yss, colors, labels):       # t -> color

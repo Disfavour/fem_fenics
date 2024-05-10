@@ -5,14 +5,18 @@ import numpy as np
 set_log_level(LogLevel.WARNING)
 
 
-def calculate(mesh_size, tau, degree, T, ts2store, kappa, ntest, info=False):
+def calculate(mesh_size, tau, kappa, ts2store, ntest=1, info=False):
     sigma = 0.5
+    degree = 1
+    T = 0.6
     u_, err = [], []
+    ue = []
 
     ts = np.arange(0, T+tau/2, tau)
     mesh = UnitIntervalMesh(mesh_size)
     x = mesh.coordinates().flatten()
     mesh_e = UnitIntervalMesh(10000)
+    x_e = mesh_e.coordinates().flatten()
 
     P = FunctionSpace(mesh, 'P', degree)
     PE = FunctionSpace(mesh_e, 'P', degree)
@@ -36,6 +40,7 @@ def calculate(mesh_size, tau, degree, T, ts2store, kappa, ntest, info=False):
 
         if np.isclose(t, ts2store).any():
             u_.append(u.compute_vertex_values())
+            ue.append(u_e.compute_vertex_values())
         
         if info:
             print(f'Time {t:>7.5f}')
@@ -64,7 +69,7 @@ def calculate(mesh_size, tau, degree, T, ts2store, kappa, ntest, info=False):
         collect_data()
         un.assign(u)
 
-    return map(np.array, (x, u_, ts, err))
+    return map(np.array, (x, u_, x_e, ue, ts, err))
 
 
 if __name__ == '__main__':
@@ -87,14 +92,17 @@ if __name__ == '__main__':
     # #print(errs)
     # exit()
 
-    x, u1, t, err1, x_e, u_exact = calculate(mesh_size=200, tau=0.0025, degree=1, T=0.6, ts2store=[0.0, 0.2, 0.4, 0.6], kappa=0.0, ntest=1, info=True)
-    x, u2, t, err2, x_e, u_exact = calculate(mesh_size=200, tau=0.0025, degree=1, T=0.6, ts2store=[0.0, 0.2, 0.4, 0.6], kappa=0.04, ntest=1, info=True)
-    x, u3, t, err3, x_e, u_exact = calculate(mesh_size=200, tau=0.0025, degree=1, T=0.6, ts2store=[0.0, 0.2, 0.4, 0.6], kappa=0.08, ntest=1, info=True)
+    x, u1, x_e, u_e, t, err1 = calculate(mesh_size=200, tau=0.0025, kappa=0.0, ts2store=[0.0, 0.2, 0.4, 0.6], ntest=1, info=True)
+    x, u2, x_e, u_e, t, err2 = calculate(mesh_size=200, tau=0.0025, kappa=0.05, ts2store=[0.0, 0.2, 0.4, 0.6], ntest=1, info=True)
+    x, u3, x_e, u_e, t, err3 = calculate(mesh_size=200, tau=0.0025, kappa=0.1, ts2store=[0.0, 0.2, 0.4, 0.6], ntest=1, info=True)
 
     plt.figure(figsize=(6.4, 3.6), dpi=300, tight_layout=True)
+    for uc in u_e:
+            plt.plot(x_e, uc, 'c')
     for u, c in zip([u1, u2, u3], ('r', 'g', 'b')):
         for uc in u:
             plt.plot(x, uc, c)
+    plt.legend(['0', "1", '2', '3'])
 
     # for un1, un2, un3, u_e, c in zip(u1, u2, u3, u_exact, ('r', 'g', 'b', 'c')):
     #     plt.plot(x, un1, '-.' + c)

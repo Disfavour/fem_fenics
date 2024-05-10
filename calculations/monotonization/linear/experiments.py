@@ -10,131 +10,33 @@ import weight
 sys.path.append('calculations')
 import plotting
 
+M_s = [100, 200, 400] # [200]
+tau_s = [0.005, 0.0025, 0.00125] # [0.0025]
+ts2store = [0.0, 0.2, 0.4, 0.6]
 
-def store(mesh_size, tau, degree, T, ts2store, sigma, alfa, gamma, kappa, ntest, calculate, fname):
-    mesh_size = 200
-    tau = 0.0025
-    T = 0.6
-    ts2store = [0.0, 0.2, 0.4, 0.6]
+#k_s = [0.0, 0.05, 0.1]
+k_s = [0.0, 0.02, 0.04]
+
+#M, tau, k, ts2store
+def store(args):
+    params = args[:-2]
+    fname = args[-2]
+    calculate = args[-1]
     try:
-        x, u, t, m = calculate(mesh_size, tau, degree, T, ts2store, sigma, alfa, gamma, kappa, ntest)
+        x, u, x_e, u_e, t, err = calculate(*params)
     except:
         return
-    np.savez_compressed(fname, x=x, u=u, t=t, m=m, ts=np.array(ts2store))
+    np.savez_compressed(fname, x=x, u=u, x_e=x_e, u_e=u_e, t=t, err=err, ts=np.array(params[-1]))
 
 
-def plot(mesh_size, tau, degree, alfa, gamma, kappa, ntest, fname, images_dir):
-    if exists(fname):
-        npz = np.load(fname)
-
-        plotting.base([npz['x'] for i in range(npz['ts'].size)], npz['u'], r'$x$', r'$u$', [f'$t={i}$' for i in npz['ts']],
-                  join(images_dir, f'u_ms{mesh_size}_tau{tau}_d{degree}_alfa{alfa}_gamma{gamma}_kappa{kappa}_ntest{ntest}.png'))
-        
-        plotting.base([npz['t']], [npz['m']], r'$t$', r'$m$', [],
-                      join(images_dir, f'm_ms{mesh_size}_tau{tau}_d{degree}_alfa{alfa}_gamma{gamma}_kappa{kappa}_ntest{ntest}.png'))
-
-
-def process_nonlinear_viscosity(mesh_size, tau, p, T, ts2store, a, y, test, data_dir, images_dir):
-        try:
-            x, u, t, err = nonlinear_viscosity.calculate(mesh_size, tau, p, T, ts2store, a, y, test)
-        except:
-            return
-        ts2store = np.array(ts2store)
-        np.savez_compressed(join(data_dir, f'a{a}_y{y}_test{test}.npz'), x=x, u=u, t=t, err=err, ts=ts2store)
-
-        # plotting.base([x for i in range(ts2store.size)], u, r'$x$', r'$u$', [f'$t={i}$' for i in ts2store],
-        #               join(images_dir, f'a{a}_y{y}_p{p}_test{test}.png'))
-        
-        # plotting.base([t], [m], r'$t$', r'$m$', [],
-        #               join(images_dir, f'm_a{a}_y{y}_p{p}_test{test}.png'))
-
-
-def experiments_nonlinear_viscosity(data_dir, images_dir):
-    name = 'nonlinear_viscosity'
-    data_dir = join(data_dir, name)
-    images_dir = join(images_dir, name)
-    makedirs(data_dir, exist_ok=True)
-    makedirs(images_dir, exist_ok=True)
+def run_experiments(params):
     
-    mesh_size = 200
-    tau = 0.0025
-    T = 0.6
-    ts2store = [0.0, 0.2, 0.4, 0.6]
-
-    tests = list(range(1, 4))
-
-    degrees = [1] #list(range(1, 4))
-    alfas = [0, 1, 16, 32] #[0] + [2**i for i in range(8)]
-    gammas = list(range(3))
-
-    param_combinations = [
-        (mesh_size, tau, p, T, ts2store, a, y, test, data_dir, images_dir)
-        for p in degrees
-        for a in alfas
-        for y in gammas
-        for test in tests
-        if not (a == 0 and y != 0)
-    ]
-
     with Pool() as p:
-        res1 = p.starmap_async(process_nonlinear_viscosity, param_combinations)
+        res1 = p.starmap_async(store, params)
         res1.wait()
-
-
-def process(mesh_size, tau, p, T, ts2store, k, test, data_dir, images_dir, calculate):
-        try:
-            x, u, t, err = calculate(mesh_size, tau, p, T, ts2store, k, test)
-        except:
-            return
-        ts2store = np.array(ts2store)
-        np.savez_compressed(join(data_dir, f'k{k}_test{test}.npz'), x=x, u=u, t=t, err=err, ts=ts2store)
-
-        # plotting.base([x for i in range(ts2store.size)], u, r'$x$', r'$u$', [f'$t={i}$' for i in ts2store],
-        #               join(images_dir, f'k{k}_p{p}_test{test}.png'))
-        
-        # plotting.base([t], [m], r'$t$', r'$m$', [],
-        #               join(images_dir, f'm_k{k}_p{p}_test{test}.png'))
-
-
-def experiments(calculate, data_dir, images_dir):
-    mesh_size = 200
-    tau = 0.0025
-    T = 0.6
-    ts2store = [0.0, 0.2, 0.4, 0.6]
-
-    tests = list(range(1, 4))
-
-    degrees = [1]
-    kappas = [0.0, 0.04, 0.08] #[0] + [0.01 * 2**i for i in range(8)]
-
-    param_combinations = [
-        (mesh_size, tau, p, T, ts2store, k, test, data_dir, images_dir, calculate)
-        for p in degrees
-        for k in kappas
-        for test in tests
-    ]
-
-    with Pool() as p:
-        res1 = p.starmap_async(process, param_combinations)
-        res1.wait()
-
-
-def test_viscosity1(data_dir, images_dir):
-    name = 'viscosity1'
-    data_dir = join(data_dir, name)
-    images_dir = join(images_dir, name)
-    makedirs(data_dir, exist_ok=True)
-    makedirs(images_dir, exist_ok=True)
-    experiments(viscosity1.calculate, data_dir, images_dir)
-
-
-def test_viscosity2(data_dir, images_dir):
-    name = 'viscosity2'
-    data_dir = join(data_dir, name)
-    images_dir = join(images_dir, name)
-    makedirs(data_dir, exist_ok=True)
-    makedirs(images_dir, exist_ok=True)
-    experiments(viscosity2.calculate, data_dir, images_dir)
+    
+    # for p in params:
+    #     store(p)
 
 
 def test_weight(data_dir, images_dir):
@@ -142,8 +44,81 @@ def test_weight(data_dir, images_dir):
     data_dir = join(data_dir, name)
     images_dir = join(images_dir, name)
     makedirs(data_dir, exist_ok=True)
-    makedirs(images_dir, exist_ok=True)
-    experiments(weight.calculate, data_dir, images_dir)
+
+    params = [
+        [[M, tau, k, ts2store, join(data_dir, f'M{M}_tau{tau}_k{k}.npz'), weight.calculate]]
+        for M in M_s
+        for tau in tau_s
+        for k in k_s
+    ]
+
+    run_experiments(params)
+
+
+def test_viscosity1(data_dir, images_dir):
+    name = 'viscosity1'
+    data_dir = join(data_dir, name)
+    images_dir = join(images_dir, name)
+    makedirs(data_dir, exist_ok=True)
+
+    params = [
+        [[M, tau, k, ts2store, join(data_dir, f'M{M}_tau{tau}_k{k}.npz'), viscosity1.calculate]]
+        for M in M_s
+        for tau in tau_s
+        for k in k_s
+    ]
+
+    run_experiments(params)
+
+
+def test_viscosity2(data_dir, images_dir):
+    name = 'viscosity2'
+    data_dir = join(data_dir, name)
+    images_dir = join(images_dir, name)
+    makedirs(data_dir, exist_ok=True)
+
+    params = [
+        [[M, tau, k, ts2store, join(data_dir, f'M{M}_tau{tau}_k{k}.npz'), viscosity2.calculate]]
+        for M in M_s
+        for tau in tau_s
+        for k in k_s
+    ]
+
+    run_experiments(params)
+
+
+def test_nonlinear_viscosity(data_dir, images_dir):
+    name = 'nonlinear_viscosity'
+    data_dir = join(data_dir, name)
+    images_dir = join(images_dir, name)
+    makedirs(data_dir, exist_ok=True)
+
+    a_s = [0, 15, 30]
+    y_s = [0]
+
+    params = [
+        [[M, tau, a, y, ts2store, join(data_dir, f'M{M}_tau{tau}_a{a}_y{y}.npz'), nonlinear_viscosity.calculate]]
+        for M in M_s
+        for tau in tau_s
+        for a in a_s
+        for y in y_s
+    ]
+
+    run_experiments(params)
+
+    a_s = [1]
+    y_s = [0, 1, 2]
+
+    params = [
+        [[M, tau, a, y, ts2store, join(data_dir, f'M{M}_tau{tau}_a{a}_y{y}.npz'), nonlinear_viscosity.calculate]]
+        for M in M_s
+        for tau in tau_s
+        for a in a_s
+        for y in y_s
+    ]
+
+    run_experiments(params)
+
 
 if __name__ == '__main__':
     import time
@@ -156,7 +131,7 @@ if __name__ == '__main__':
         f(*params)
         print(time.time() - start_time)
         
-    timeit(experiments_nonlinear_viscosity, (data_dir, images_dir))
+    timeit(test_weight, (data_dir, images_dir))
     #timeit(test_viscosity1, (data_dir, images_dir))
     #timeit(test_viscosity2, (data_dir, images_dir))
-    #timeit(test_weight, (data_dir, images_dir))
+    #timeit(test_nonlinear_viscosity, (data_dir, images_dir))

@@ -12,7 +12,7 @@ import plotting
 
 def store_data(hl, hr, T, mesh_size, tau, theta, sigma, ts2store, calculate, data_dir):
     try:
-        results = calculate(hl, hr, T, mesh_size, tau, theta, sigma, ts2store)
+        results = calculate(hl, hr, T, mesh_size, tau, 1, sigma, ts2store)
     except:
         return
     t, m, E, m_e, E_e, err_h, err_u, x, h, u, x_e, h_e, u_e = results
@@ -141,8 +141,8 @@ def test_double_time_layer(data_dir, images_dir):
     mesh_sizes = (800, 400, 200)
     taus = (0.005, 0.01, 0.02)
     thetas = (1.0,)
-    sigmas = (0.5, 0.75, 1.0, 1.25, 1.5)
-    #sigmas = (2.0,)
+    #sigmas = (0.5, 0.75, 1.0, 1.25, 1.5)
+    sigmas = (0.55,)
     
     experiments(2, 1, 0.9, mesh_sizes, taus, thetas, sigmas, double_time_layer.calculate, data_dir, images_dir)
 
@@ -183,8 +183,8 @@ def test_double_time_layer_special(data_dir, images_dir):
     makedirs(data_dir, exist_ok=True)
     makedirs(images_dir, exist_ok=True)
 
-    mesh_sizes = (200,)
-    taus = (0.005,)
+    mesh_sizes = (100, 200, 400)
+    taus = (0.01, 0.005, 0.0025)
     thetas = (1, 2) # degree
     sigmas = (0.6,)
     #sigmas = (2.0,)
@@ -204,7 +204,7 @@ if __name__ == '__main__':
         f(*params)
         print(time.time() - start_time)
 
-    # timeit(test_double_time_layer, (data_dir, images_dir))
+    #timeit(test_double_time_layer, (data_dir, images_dir))
     # timeit(test_triple_time_layer_1, (data_dir, images_dir))
     # timeit(test_triple_time_layer_2, (data_dir, images_dir))
 

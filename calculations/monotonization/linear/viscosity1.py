@@ -5,14 +5,18 @@ import numpy as np
 set_log_level(LogLevel.WARNING)
 
 
-def calculate(mesh_size, tau, degree, T, ts2store, kappa, ntest, info=False):
+def calculate(mesh_size, tau, kappa, ts2store, ntest=1, info=False):
     sigma = 0.5
+    degree = 1
+    T = 0.6
     u_, err = [], []
+    ue = []
 
     ts = np.arange(0, T+tau/2, tau)
     mesh = UnitIntervalMesh(mesh_size)
     x = mesh.coordinates().flatten()
     mesh_e = UnitIntervalMesh(10000)
+    x_e = mesh_e.coordinates().flatten()
 
     P = FunctionSpace(mesh, 'P', degree)
     PE = FunctionSpace(mesh_e, 'P', degree)
@@ -36,6 +40,7 @@ def calculate(mesh_size, tau, degree, T, ts2store, kappa, ntest, info=False):
 
         if np.isclose(t, ts2store).any():
             u_.append(u.compute_vertex_values())
+            ue.append(u_e.compute_vertex_values())
 
         if info:
             print(f'Time {t:>7.5f}')
@@ -64,7 +69,7 @@ def calculate(mesh_size, tau, degree, T, ts2store, kappa, ntest, info=False):
         collect_data()
         un.assign(u)
 
-    return map(np.array, (x, u_, ts, err))
+    return map(np.array, (x, u_, x_e, ue, ts, err))
 
 
 if __name__ == '__main__':

@@ -17,6 +17,7 @@ makedirs(images, exist_ok=True)
 M = 400
 tau = 0.01
 ss = [0.5, 1.0, 1.5]
+#ss = [0.5, 0.75, 1.0]
 
 d = []
 for s in ss:
@@ -39,7 +40,8 @@ for f in ['h', 'u']:
 # dif M
 Ms = [200, 400, 800]
 tau = 0.01
-ss = [0.5, 1.0, 1.5]
+#ss = [0.5, 1.0, 1.5]
+#ss = [0.5, 0.55, 1.0]
 
 d = []
 for M in Ms:
@@ -60,7 +62,7 @@ for f in ['h', 'u']:
 M = 400
 taus = [0.005, 0.01, 0.02]
 taus.reverse()
-ss = [0.5, 1.0, 1.5]
+#ss = [0.5, 1.0, 1.5]
 
 d = []
 for tau in taus:

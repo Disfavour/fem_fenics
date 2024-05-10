@@ -17,7 +17,7 @@ makedirs(images, exist_ok=True)
 M = 400
 tau = 0.01
 theta = 0.5
-ss = (0.25, 0.5) # 1.0
+ss = (0.5, 0.25) # 1.0
 
 d = []
 for s in ss:

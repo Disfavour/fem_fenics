@@ -88,7 +88,7 @@ def calculate(hl, hr, T, mesh_size, tau, degree, sigma, ts2store, info=False):
             'absolute_tolerance': 1e-13,
             'relative_tolerance': 1e-13,
             'maximum_iterations': 50,
-            'relaxation_parameter': 1.0,
+            'relaxation_parameter': 1.0
         }})
         collect_data()
         wn.assign(w)
@@ -100,10 +100,13 @@ if __name__ == '__main__':
     import time
     import matplotlib.pyplot as plt
     strart_time = time.time()
-    #ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 400, 0.01, None, 1.0, [0.9], True)
-    ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 200, 0.005, 2, 0.6, [0.3, 0.6, 0.9], True)
+    #ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 400, 0.01, 3, 0.5, [0.3, 0.6, 0.9], True)
+    ts, m, E, m_e, E_e, err_h, err_u, x, h_, u_, x_e, h_e, u_e = calculate(2, 1, 0.9, 200, 0.005, 1, 0.6, [0.3, 0.6, 0.9], True)
+
+    print(time.time() - strart_time)
+
     plt.plot(x, h_.T)
     #plt.plot(x_e, h_e[0], ':')
     plt.show()
-    print(time.time() - strart_time)
+    
     pass
