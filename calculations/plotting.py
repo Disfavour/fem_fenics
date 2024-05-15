@@ -12,7 +12,7 @@ def dif_times(xs, yss, ylabel, labels, fname):
     plt.figure(figsize=(6.4, 3.6), dpi=dpi, tight_layout=True)
 
     lines = ['-', ':', '--', '-.']  # увеличение монотонности
-    if len(yss[0]) == 3:
+    if len(yss[0]) <= 3:
         #lines = ['-', ':', '--']
         lines = ['-', '--', ':']
 
@@ -23,7 +23,7 @@ def dif_times(xs, yss, ylabel, labels, fname):
 
     plt.xlabel(r'$x$')
     plt.ylabel(ylabel)
-    plt.xlim(x[0], x[-1])
+    plt.xlim(xs[0][0], xs[0][-1])
     plt.legend()
     plt.grid()
     plt.savefig(fname, transparent=True)

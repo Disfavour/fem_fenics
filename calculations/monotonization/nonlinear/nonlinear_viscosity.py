@@ -5,8 +5,10 @@ import numpy as np
 set_log_level(LogLevel.WARNING)
 
 
-def calculate(mesh_size, tau, degree, T, ts2store, alfa, gamma, ntest, info=False):
+def calculate(mesh_size, tau, alfa, gamma, ts2store, ntest=2, info=False):
     sigma = 0.5
+    degree = 1
+    T = 0.6
     u_, err = [], []
     ue_ = []
 

@@ -5,8 +5,10 @@ import numpy as np
 set_log_level(LogLevel.WARNING)
 
 
-def calculate(mesh_size, tau, degree, T, ts2store, kappa, ntest, info=False):
+def calculate(mesh_size, tau, kappa, ts2store, ntest=2, info=False):
     sigma = 0.5
+    degree = 1
+    T = 0.6
     u_, err = [], []
     ue_ = []
 
@@ -33,8 +35,12 @@ def calculate(mesh_size, tau, degree, T, ts2store, kappa, ntest, info=False):
     dt = (u - un)/tau
     us = sigma*u + (1-sigma)*un
 
+    # F = (dt + us*us.dx(0)) * ut*dx \
+    #     + kappa * us * (u-un).dx(0) * ut*dx(mesh)
+
+    # справедливо только для линейных операторов, поэтому us убираем
     F = (dt + us*us.dx(0)) * ut*dx \
-        + kappa * us * (u-un).dx(0) * ut*dx(mesh)
+        + kappa * (u-un).dx(0) * ut*dx(mesh)
     
     def exact_rarefaction(t):
         xs = xe.copy()

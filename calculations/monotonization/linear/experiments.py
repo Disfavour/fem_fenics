@@ -131,7 +131,7 @@ if __name__ == '__main__':
         f(*params)
         print(time.time() - start_time)
         
-    timeit(test_weight, (data_dir, images_dir))
+    #timeit(test_weight, (data_dir, images_dir))
     #timeit(test_viscosity1, (data_dir, images_dir))
     #timeit(test_viscosity2, (data_dir, images_dir))
-    #timeit(test_nonlinear_viscosity, (data_dir, images_dir))
+    timeit(test_nonlinear_viscosity, (data_dir, images_dir))

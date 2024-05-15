@@ -14,14 +14,17 @@ makedirs(data, exist_ok=True)
 makedirs(images, exist_ok=True)
 
 test = 1
-ks = [0.0, 0.04, 0.08]
+ks = [0.0, 0.05, 0.1]
+M = 200
+tau = 0.0025
 
 d = []
 for k in ks:
-    d.append(np.load(join(data, f'k{k}_test{test}.npz')))
+    d.append(np.load(join(data, f'M{M}_tau{tau}_k{k}.npz')))
 
 xs = [i['x'] for i in d]
 yss = []
+
 for t in range(d[0]['ts'].size):
     ys = []
     for i in d:

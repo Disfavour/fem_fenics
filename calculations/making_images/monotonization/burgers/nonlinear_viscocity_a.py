@@ -6,37 +6,39 @@ from os import makedirs
 import numpy as np
 
 
-name = 'viscosity1'
-data = join('data', 'monotonization', 'linear', name)
+name = 'nonlinear_viscosity'
+data = join('data', 'monotonization', 'nonlinear', name)
 images = join('images', 'diplom')
 
 makedirs(data, exist_ok=True)
 makedirs(images, exist_ok=True)
 
-test = 1
-ks = [0.0, 0.05, 0.1]
+# [0, 50, 100, 200, 500, 1000]
+alfas = [50, 500, 1000]
+y = 0
+
 M = 200
 tau = 0.0025
 
 d = []
-for k in ks:
-    d.append(np.load(join(data, f'M{M}_tau{tau}_k{k}.npz')))
+for a in alfas:
+    d.append(np.load(join(data, f'M{M}_tau{tau}_a{a}_y{y}.npz')))
 
-xs = [i['x'] for i in d]
+xs = [d[0]['x_e']] + [i['x'] for i in d]
 yss = []
-
 for t in range(d[0]['ts'].size):
-    ys = []
+    ys = [d[0][f'u_e'][t]]
     for i in d:
         ys.append(i['u'][t])
-    ys.reverse()
     yss.append(ys)
     
 ylabel = fr'$u$'
 labels = [fr'$t = {t}$' for t in d[0]['ts']]
-fname = join(images, f'transport_{name}.pdf')
+fname = join(images, f'burgers_{name}_dif_a.pdf')
 plotting.dif_times(xs, yss, ylabel, labels, fname)
 
+
+alfas = [0] + alfas
 
 # dif M
 Ms = [100, 200, 400]
@@ -45,8 +47,8 @@ tau = 0.0025
 d = []
 for M in Ms:
     tmp = []
-    for k in ks:
-        tmp.append(np.load(join(data, f'M{M}_tau{tau}_k{k}.npz')))
+    for a in alfas:
+        tmp.append(np.load(join(data, f'M{M}_tau{tau}_a{a}_y{y}.npz')))
     d.append(tmp)
 
 f = 'u'
@@ -54,7 +56,7 @@ ts = [i[0]['t'] for i in d]
 yss = [[j[f'err'] for j in i] for i in d]
 ylabel = fr'$\varepsilon_{f}$'
 labels = [fr'$M = {M}$' for M in Ms]
-fname = join(images, f'transport_{name}_err_M.pdf')
+fname = join(images, f'burgers_{name}_dif_a_err_M.pdf')
 plotting.dif_params(ts, yss, ylabel, labels, fname)
 
 # dif tau
@@ -64,8 +66,8 @@ taus = [0.005, 0.0025, 0.00125]
 d = []
 for tau in taus:
     tmp = []
-    for k in ks:
-        tmp.append(np.load(join(data, f'M{M}_tau{tau}_k{k}.npz')))
+    for a in alfas:
+        tmp.append(np.load(join(data, f'M{M}_tau{tau}_a{a}_y{y}.npz')))
     d.append(tmp)
 
 f = 'u'
@@ -73,5 +75,5 @@ ts = [i[0]['t'] for i in d]
 yss = [[j[f'err'] for j in i] for i in d]
 ylabel = fr'$\varepsilon_{f}$'
 labels = [fr'$\tau = {tau}$' for tau in taus]
-fname = join(images, f'transport_{name}_err_tau.pdf')
+fname = join(images, f'burgers_{name}_dif_a_err_tau.pdf')
 plotting.dif_params(ts, yss, ylabel, labels, fname)
