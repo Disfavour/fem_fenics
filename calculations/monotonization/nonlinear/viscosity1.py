@@ -35,8 +35,12 @@ def calculate(mesh_size, tau, kappa, ts2store, ntest=2, info=False):
     dt = (u - un)/tau
     us = sigma*u + (1-sigma)*un
 
+    # F = (dt + us*us.dx(0)) * ut*dx \
+    #     + kappa*tau * us**2 * us.dx(0)*ut.dx(0) * dx(mesh)
+    
+    # справедливо только для линейных операторов, поэтому us**2 убираем
     F = (dt + us*us.dx(0)) * ut*dx \
-        + kappa*tau * us**2 * us.dx(0)*ut.dx(0) * dx(mesh)
+        + kappa*tau * us.dx(0)*ut.dx(0) * dx(mesh)
     
     def exact_rarefaction(t):
         xs = xe.copy()

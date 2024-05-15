@@ -37,7 +37,7 @@ fname = join(images, f'burgers.pdf')
 plotting.dif_times(xs, yss, ylabel, labels, fname)
 
 # 2
-ks2 = [0.2, 0.5, 2.0]
+ks2 = [0.2, 1.0, 2.0]
 
 d = []
 for k in ks2:

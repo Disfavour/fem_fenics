@@ -18,6 +18,8 @@ def calculate(mesh_size, tau):
     m_mid = [[] for i in range(7)]
     m_out = [[] for i in range(7)]
 
+    data = []
+
     eps = 0.000015
     Re = 5000
     f = (-2*np.log(eps/D/3.7 - 4.518/Re*np.log(6.9/Re + (eps/D/3.7)**1.11))) ** -2
@@ -277,14 +279,21 @@ def calculate(mesh_size, tau):
         m_out_expr.t = t / 3600
         iteration()
         collect_data()
+    
+    for w in w_s:
+        data.append(w.sub(0).compute_vertex_values())
+        data.append(w.sub(1).compute_vertex_values())
 
-    return ts, P_nodes, m_in, m_mid, m_out
+    return ts, P_nodes, m_in, m_mid, m_out, np.array(data)
 
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
+    from os.path import dirname, join
 
-    t, P_nodes, m_in, m_mid, m_out = calculate(mesh_size=50, tau=100) # 0.25 * 3600
+    t, P_nodes, m_in, m_mid, m_out, data = calculate(mesh_size=50, tau=100) # 0.25 * 3600
+
+    np.save(join('data', 'diamond_network'), data)
 
     plt.figure(figsize=(6.4, 3.6), dpi=300, tight_layout=True)
     for i, p in enumerate(P_nodes):
