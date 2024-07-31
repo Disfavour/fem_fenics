@@ -16,6 +16,8 @@ def calculate(mesh_size):
     eps = 0.000617
     Re = 6000
     f = (-2*np.log(eps/D/3.7 - 4.518/Re*np.log(6.9/Re + (eps/D/3.7)**1.11))) ** -2
+    f = 0.009
+    print(f)
 
     S = 0.6
     M_air = 28.964917 / 1000
@@ -42,7 +44,6 @@ def calculate(mesh_size):
     p.assign(project(Constant(P_left), P))
 
     solve(F == 0, p, bc)
-    mesh.coordinates
 
     return x, p.compute_vertex_values(), stationary_analytic.get_exact(x, D, A, Rs, T, f, m, P_left)
 

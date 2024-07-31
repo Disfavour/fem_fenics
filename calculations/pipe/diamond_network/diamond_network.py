@@ -1,6 +1,7 @@
 from fenics import *
 import numpy as np
 from scipy.constants import pi, R
+from bc import BC_diamond
 
 
 set_log_level(LogLevel.WARNING)
@@ -20,9 +21,10 @@ def calculate(mesh_size, tau):
 
     data = []
 
-    eps = 0.000015
-    Re = 5000
-    f = (-2*np.log(eps/D/3.7 - 4.518/Re*np.log(6.9/Re + (eps/D/3.7)**1.11))) ** -2
+    # eps = 0.000015
+    # Re = 5000
+    # f = (-2*np.log(eps/D/3.7 - 4.518/Re*np.log(6.9/Re + (eps/D/3.7)**1.11))) ** -2
+    f = 0.009
 
     S = 0.6
     M_air = 28.964917 / 1000
@@ -33,7 +35,7 @@ def calculate(mesh_size, tau):
     Z = 1
 
     # t в часах
-    m_out_expr = Expression('t < 1 ? 100 : (t < 3 ? 50*t + 50 : (t < 6 ? 200 : (t < 8 ? 560 - 60*t : 80)))', t=0, degree=1)
+    m_out_expr = BC_diamond()
 
     ts = np.arange(0, t_max+tau/2, tau)
     mesh = IntervalMesh(mesh_size, 0, L)
@@ -75,12 +77,7 @@ def calculate(mesh_size, tau):
             m_mid[i].append(w_s[i].sub(1)(L/2))
             m_out[i].append(w_s[i].sub(1)(L))
     
-    t = 0
-    for w, wn in zip(w_s, wn_s):
-        w.assign(project(Expression(('P', 'm'), P=P_in, m=100, degree=1), W))
-        wn.assign(w)
-    
-    def iteration():
+    def calculate_w():
         A_s, b_s = [], []
         for a, L, bc in zip(a_s, L_s, bc_s):
             A, b = assemble_system(a, L, bc)
@@ -265,20 +262,34 @@ def calculate(mesh_size, tau):
         res = np.linalg.solve(A0, b0)
         for i, w in enumerate(reversed(w_s)):
             w.vector()[:] = res[i*n:(i+1)*n]
-        
-        for w, wn in zip(w_s, wn_s):
-            wn.assign(w)
+    
+    t = 0
+    for w, wn in zip(w_s, wn_s):
+        w.assign(project(Expression(('P', 'm'), P=P_in, m=100, degree=1), W))
     
     # установившееся течение - это начальные условия
-    for i in range(int(3600 // tau)):
-        iteration()
+    while not np.allclose(np.array([w_cur.vector().get_local() for w_cur in w_s]), np.array([wn_cur.vector().get_local() for wn_cur in wn_s])):
+        for w, wn in zip(w_s, wn_s):
+            wn.assign(w)
+        calculate_w()
+
+        t += tau
+        print(f'Time ustanovlenie {t:>7.5f}')
     
+    t = 0
     collect_data()
 
+    for w, wn in zip(w_s, wn_s):
+            wn.assign(w)
+
     for t in ts[1:]:
-        m_out_expr.t = t / 3600
-        iteration()
+        m_out_expr.update_t(t)
+        calculate_w()
+
         collect_data()
+
+        for w, wn in zip(w_s, wn_s):
+            wn.assign(w)
     
     for w in w_s:
         data.append(w.sub(0).compute_vertex_values())
@@ -290,23 +301,45 @@ def calculate(mesh_size, tau):
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     from os.path import dirname, join
+    import numpy as np
 
-    t, P_nodes, m_in, m_mid, m_out, data = calculate(mesh_size=50, tau=100) # 0.25 * 3600
+    taus = [i * 3600 / 8 for i in (1, 2, 4)]
+    print(taus)
 
-    np.save(join('data', 'diamond_network'), data)
+    lines = ['-', '--', ':', '-.']
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+
+    u = []
+    u_0 = np.array([list(range(0, 13*3600, 3600)), [8e6 for i in range(13)]]).T
+    plt.scatter(u_0[:,0], u_0[:,1])
+    for i in [1, 2, 3, 5]:
+        u_i = np.genfromtxt(join('data', 'pipes', f'U_{i}.csv'), delimiter=';')
+        u_i[:, 0] *= 60
+        u_i[:, 1] *= 1e5
+        u.append(u_i)
+        plt.scatter(u_i[:,0], u_i[:,1])
+    plt.show()
+    
+    exit()
 
     plt.figure(figsize=(6.4, 3.6), dpi=300, tight_layout=True)
-    for i, p in enumerate(P_nodes):
-        plt.plot(t, p, label=i)
-    plt.legend()
-    plt.grid()
 
-    for ms in [m_out]:
-        plt.figure(figsize=(6.4, 3.6), dpi=300, tight_layout=True)
-        for i, m in enumerate(ms):
-            plt.plot(t, m, label=i)
-        plt.legend()
-        plt.grid()
+    for tau, l in zip(taus, lines):
+        t, P_nodes, m_in, m_mid, m_out, data = calculate(mesh_size=5, tau=tau)
+
+        #P_nodes[3], P_nodes[4] = P_nodes[4], P_nodes[3]
+        # 2 = 4
+        del P_nodes[3]
+        for p, c in zip(P_nodes, colors):
+            plt.plot(t, p, c+l)
     
-    
-    plt.show()
+    for u_i, c in zip(u, colors):
+        plt.plot(u_i[:,0], u_i[:,1], 'o'+colors[2], ms=3)
+
+    plt.xticks(range(0, 13*3600, 2*3600))
+    plt.xlabel(r'$t$')
+    plt.ylabel(r'$p$')
+    plt.xlim(t[0], t[-1])
+    plt.legend(['0', '1', '2, 4', '3', '5'])
+    plt.grid()
+    plt.savefig(join('images', 'pipes', 'diamond.pdf'), transparent=True)

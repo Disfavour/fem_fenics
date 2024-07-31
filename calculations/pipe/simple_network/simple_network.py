@@ -1,6 +1,7 @@
 from fenics import *
 import numpy as np
 from scipy.constants import pi, R
+from bc import get_bcs
 
 
 set_log_level(LogLevel.WARNING)
@@ -17,7 +18,7 @@ def calculate(mesh_size, tau):
 
     P_node_2, P_node_3 = [], []
 
-    f = 0.0105
+    f = 0.009    # 0.0105
 
     S = 0.6
     M_air = 28.964917 / 1000
@@ -65,38 +66,9 @@ def calculate(mesh_size, tau):
         P_node_2.append(w[2].sub(0)(0))
         P_node_3.append(w[2].sub(0)(L_3))
     
-    def m2():
-        t_h = t / 3600
-        q = None
-        if t_h <= 4:
-            q = 20 + 2.5*t_h
-        elif t_h <= 12:
-            q = 40 - 2.5*t_h
-        elif t_h <= 20:
-            q = 2.5*t_h - 20
-        elif t_h <= 24:
-            q = 80 - 2.5*t_h
-        return rho * q
+    q2, q3 = get_bcs()
 
-    def m3():
-        t_h = t / 3600
-        q = None
-        if t_h <= 4:
-            q = 40 + 2.5*t_h
-        elif t_h <= 12:
-            q = 60 - 2.5*t_h
-        elif t_h <= 20:
-            q = 2.5*t_h
-        elif t_h <= 24:
-            q = 100 - 2.5*t_h
-        return rho * q
-    
-    t = 0
-    for w_cur, wn_cur, W in zip(w, wn, Ws):
-        w_cur.assign(project(Expression(('P_left', 'm_right'), P_left=P_left, m_right=rho*q_right, degree=1), W))
-        wn_cur.assign(w_cur)
-    
-    def iteration():
+    def calculate_w():
         A, b = [], []
         for a1, L1, bc1 in zip(a, L, bc):
             A1, b1 = assemble_system(a1, L1, bc1)
@@ -165,7 +137,7 @@ def calculate(mesh_size, tau):
 
         A0[v2][m2_end] = 1
         A0[v2][m3_begin] = -1
-        b0[v2] = m2()
+        b0[v2] = rho * q2(t)
 
         # node 3
         A0[v3][p1_end] = 1
@@ -173,47 +145,63 @@ def calculate(mesh_size, tau):
 
         A0[v4][m1_end] = 1
         A0[v4][m3_end] = 1
-        b0[v4] = m3()
+        b0[v4] = rho * q3(t)
 
         res = np.linalg.solve(A0, b0)
         for i, w1 in enumerate(reversed(w)):
             w1.vector()[:] = res[i*n:(i+1)*n]
-        
+    
+    t = 0
+    t_ust = 0
+    for w_cur, wn_cur, W in zip(w, wn, Ws):
+        w_cur.assign(project(Expression(('P_left', 'm_right'), P_left=P_left, m_right=rho*q_right, degree=1), W))
+    
+    # установившееся течение - это начальные условия
+    while not np.allclose(np.array([w_cur.vector().get_local() for w_cur in w]), np.array([wn_cur.vector().get_local() for wn_cur in wn])):
         for w_cur, wn_cur in zip(w, wn):
             wn_cur.assign(w_cur)
         
-    # установившееся течение - это начальные условия
-    for i in range(int(3600 // tau)):
-        iteration()
+        calculate_w()
+
+        t_ust += tau
+        print(f'Time ustanovlenie {t_ust:>7.5f}')
     
     collect_data()
+    for w_cur, wn_cur in zip(w, wn):
+            wn_cur.assign(w_cur)
 
     for t in ts[1:]:
-        iteration()
+        calculate_w()
+        
         collect_data()
+
+        for w_cur, wn_cur in zip(w, wn):
+            wn_cur.assign(w_cur)
 
     return ts, P_node_2, P_node_3
 
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
+    from os.path import join
 
-    ts, P_node_2, P_node_3 = calculate(mesh_size=50, tau=100) # 0.25 * 3600 100
+    taus = [i * 3600 / 4 for i in (1, 2, 4)]
+    print(taus)
 
-    fig, axs = plt.subplots(2)
-    fig.set_size_inches(6, 6)
-    fig.set_dpi(300)
+    lines = ['-', '--', ':', '-.']
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
 
-    axs[0].plot(ts, P_node_2)
-    axs[0].set_title('P_node_2')
-    axs[0].grid()
-    axs[0].set_xlim(ts[0], ts[-1])
-    axs[0].set_ylim(4.7e6, 5e6)
+    plt.figure(figsize=(6.4, 3.6), dpi=300, tight_layout=True)
 
-    axs[1].plot(ts, P_node_3)
-    axs[1].set_title('P_node_3')
-    axs[1].grid()
-    axs[1].set_xlim(ts[0], ts[-1])
-    axs[1].set_ylim(4.7e6, 5e6)
-    
-    plt.show()
+    for tau, l in zip(taus, lines):
+        ts, P_node_2, P_node_3 = calculate(mesh_size=100, tau=tau)
+        plt.plot(ts, P_node_2, colors[0]+l)
+        plt.plot(ts, P_node_3, colors[1]+l)
+
+    plt.xticks(range(0, 25*3600, 4*3600))
+    plt.xlabel(r'$t$')
+    plt.ylabel(r'$p$')
+    plt.xlim(ts[0], ts[-1])
+    plt.legend(('2', '3'))
+    plt.grid()
+    plt.savefig(join('images', 'pipes', 'simple.pdf'), transparent=True)
